@@ -1,0 +1,67 @@
+import { dashboardText } from '../../../constants/dashboardText.js';
+import { recommendationMeta, statusMeta } from '../../../constants/statusMeta.js';
+import styles from './JobOfferCard.module.css';
+
+export function JobOfferCard({ job }) {
+  const status = statusMeta[job.match.status] || statusMeta.ANALYZED;
+
+  return (
+    <article className={styles.card}>
+      <div className={styles.top}>
+        <div>
+          <p className={styles.company}>{job.jobOffer.company}</p>
+          <h3>{job.jobOffer.title}</h3>
+        </div>
+        <div className={styles.scoreBlock}>
+          <strong>{job.match.score}</strong>
+          <span>{recommendationMeta[job.match.recommendation]}</span>
+        </div>
+      </div>
+
+      <div className={styles.metaRow}>
+        <span className={`${styles.badge} ${styles[status.tone]}`}>{status.label}</span>
+        <span>{job.source.label}</span>
+        <span>{job.source.originalUrl || 'Sin enlace'}</span>
+      </div>
+
+      <div className={styles.grid}>
+        <InfoList title={dashboardText.list.matches} items={job.match.explanation.matches} tone="good" />
+        <InfoList title={dashboardText.list.gaps} items={job.match.explanation.gaps} tone="bad" />
+        <InfoList title={dashboardText.list.risks} items={job.match.explanation.risks} tone="warn" />
+        <InfoList
+          title={dashboardText.list.approvals}
+          items={job.match.approvals.map((item) => `${item.field}: ${item.reason}`)}
+          tone="neutral"
+        />
+      </div>
+
+      {job.match.excludedByRules.length ? (
+        <div className={styles.blockedPanel}>
+          <strong>{dashboardText.list.blocked}</strong>
+          <ul>
+            {job.match.excludedByRules.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
+function InfoList({ title, items, tone }) {
+  return (
+    <section className={styles.section}>
+      <h4>{title}</h4>
+      {items.length ? (
+        <ul className={styles[tone]}>
+          {items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className={styles.empty}>Sin novedades.</p>
+      )}
+    </section>
+  );
+}

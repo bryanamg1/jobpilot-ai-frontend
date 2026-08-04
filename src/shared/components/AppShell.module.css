@@ -1,0 +1,44 @@
+.page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255, 209, 102, 0.35), transparent 32%),
+    radial-gradient(circle at top right, rgba(31, 95, 255, 0.18), transparent 28%),
+    linear-gradient(180deg, #f9f5eb 0%, #f3efe5 100%);
+  color: #1f2430;
+}
+
+.hero {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 48px 24px 28px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #8b5e34;
+}
+
+.title {
+  margin: 0;
+  max-width: 720px;
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  line-height: 0.94;
+}
+
+.subtitle {
+  max-width: 760px;
+  margin: 18px 0 0;
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: #4f5665;
+}
+
+.content {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
