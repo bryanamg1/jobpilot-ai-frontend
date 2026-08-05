@@ -16,7 +16,7 @@ describe('App', () => {
               JSON.stringify({
                 data: {
                   storageMode: 'memory',
-                  metrics: { total: 1, readyToPrepare: 1, blocked: 0 },
+                  metrics: { total: 1, readyToPrepare: 0, awaitingApproval: 1, blocked: 0 },
                   latest: [],
                 },
               }),

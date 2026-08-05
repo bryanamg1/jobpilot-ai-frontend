@@ -2,7 +2,7 @@ import { dashboardText } from '../../../constants/dashboardText.js';
 import { JobOfferCard } from './JobOfferCard.jsx';
 import styles from './JobOfferList.module.css';
 
-export function JobOfferList({ jobs }) {
+export function JobOfferList({ jobs, onPreviewRequest, previewLoadingJobId }) {
   return (
     <section className={styles.wrapper}>
       <div className={styles.header}>
@@ -12,7 +12,12 @@ export function JobOfferList({ jobs }) {
       {jobs.length ? (
         <div className={styles.list}>
           {jobs.map((job) => (
-            <JobOfferCard key={job.id} job={job} />
+            <JobOfferCard
+              key={job.id}
+              job={job}
+              onPreviewRequest={onPreviewRequest}
+              previewLoadingJobId={previewLoadingJobId}
+            />
           ))}
         </div>
       ) : (
