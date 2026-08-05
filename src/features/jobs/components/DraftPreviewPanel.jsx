@@ -74,6 +74,16 @@ export function DraftPreviewPanel({
         <section className={styles.section}>
           <h3>{draftText.gmailDraftSuccess}</h3>
           <p className={styles.empty}>{gmailDraftResult.subject}</p>
+          <p className={styles.helper}>
+            {gmailDraftResult.attachmentStatus === 'ATTACHED'
+              ? draftText.gmailDraftAttachmentAttached
+              : draftText.gmailDraftAttachmentManual}
+          </p>
+          {gmailDraftResult.attachedResume ? (
+            <p className={styles.helper}>
+              {`${gmailDraftResult.attachedResume.label} (${gmailDraftResult.attachedResume.originalFileName})`}
+            </p>
+          ) : null}
           <ul className={styles.list}>
             {gmailDraftResult.warnings.map((item) => (
               <li key={item}>{item}</li>
