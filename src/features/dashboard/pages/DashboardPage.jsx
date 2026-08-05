@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { AnswerLibraryPanel } from '../../answers/components/AnswerLibraryPanel.jsx';
+import { SensitiveApprovalPanel } from '../../approvals/components/SensitiveApprovalPanel.jsx';
+import { useApprovalsQuery } from '../../approvals/hooks/useApprovalsQuery.js';
+import { useResolveSensitiveApproval } from '../../approvals/hooks/useResolveSensitiveApproval.js';
 import { dashboardText } from '../../../constants/dashboardText.js';
 import { AppShell } from '../../../shared/components/AppShell.jsx';
 import { GmailAlertsPanel } from '../../gmail/components/GmailAlertsPanel.jsx';
@@ -28,12 +31,18 @@ import styles from './DashboardPage.module.css';
 export function DashboardPage() {
   const [selectedPreviewJobId, setSelectedPreviewJobId] = useState(null);
   const [reviewState, setReviewState] = useState({ jobId: null, decision: null });
+  const [approvalDecisionState, setApprovalDecisionState] = useState({
+    requestId: null,
+    decision: null,
+  });
   const dashboardQuery = useDashboardQuery();
   const jobsQuery = useJobsQuery();
   const profileQuery = useProfileQuery();
   const resumesQuery = useResumesQuery();
+  const approvalsQuery = useApprovalsQuery();
   const draftPreviewMutation = useCreateDraftPreview();
   const reviewDecisionMutation = useReviewJobDecision();
+  const resolveSensitiveApprovalMutation = useResolveSensitiveApproval();
   const uploadResumeMutation = useUploadResume();
   const assignResumeMutation = useAssignResumeToJob();
   const gmailStatusQuery = useGmailStatusQuery();
@@ -49,6 +58,7 @@ export function DashboardPage() {
   };
   const jobs = jobsQuery.data || [];
   const resumes = resumesQuery.data || [];
+  const approvals = approvalsQuery.data || [];
   const approvalJobs = jobs.filter((job) => job.match.status === 'AWAITING_APPROVAL');
   const selectedPreviewJob = jobs.find((job) => job.id === selectedPreviewJobId) ?? null;
 
@@ -115,6 +125,33 @@ export function DashboardPage() {
     );
   }
 
+  function handleResolveSensitiveApproval(item, decision) {
+    const note =
+      decision === 'approve'
+        ? dashboardText.sensitiveApprovals.approveNote
+        : dashboardText.sensitiveApprovals.rejectNote;
+
+    setApprovalDecisionState({ requestId: item.id, decision });
+    resolveSensitiveApprovalMutation.mutate(
+      {
+        decision,
+        requestId: item.id,
+        note,
+      },
+      {
+        onSuccess: () => {
+          if (selectedPreviewJobId === item.entityId) {
+            draftPreviewMutation.mutate(item.entityId);
+          }
+          setApprovalDecisionState({ requestId: null, decision: null });
+        },
+        onError: () => {
+          setApprovalDecisionState({ requestId: null, decision: null });
+        },
+      },
+    );
+  }
+
   return (
     <AppShell
       eyebrow={dashboardText.shell.eyebrow}
@@ -163,6 +200,19 @@ export function DashboardPage() {
             isAssigning={assignResumeMutation.isPending}
             assignError={assignResumeMutation.error}
           />
+          <SensitiveApprovalPanel
+            approvals={approvals}
+            isLoading={approvalsQuery.isLoading}
+            error={approvalsQuery.error}
+            onApprove={(item) => handleResolveSensitiveApproval(item, 'approve')}
+            onReject={(item) => handleResolveSensitiveApproval(item, 'reject')}
+            pendingRequestId={
+              resolveSensitiveApprovalMutation.isPending ? approvalDecisionState.requestId : null
+            }
+            pendingDecision={
+              resolveSensitiveApprovalMutation.isPending ? approvalDecisionState.decision : null
+            }
+          />
           <AnswerLibraryPanel />
         </div>
         <div className={styles.right}>
@@ -178,6 +228,9 @@ export function DashboardPage() {
           />
           {reviewDecisionMutation.isError ? (
             <PanelMessage message={reviewDecisionMutation.error.message} tone="error" />
+          ) : null}
+          {resolveSensitiveApprovalMutation.isError ? (
+            <PanelMessage message={resolveSensitiveApprovalMutation.error.message} tone="error" />
           ) : null}
           {jobsQuery.isLoading ? <PanelMessage message="Cargando bandeja de aprobacion..." /> : null}
           {jobsQuery.isError ? <PanelMessage message={jobsQuery.error.message} tone="error" /> : null}
