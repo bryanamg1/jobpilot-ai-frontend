@@ -1,6 +1,6 @@
 .metricGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 22px;
 }
@@ -41,6 +41,51 @@
   background: rgba(255, 255, 255, 0.82);
 }
 
+.operationsPanel {
+  border-radius: 22px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
+  display: grid;
+  gap: 16px;
+}
+
+.operationsPanel h2,
+.operationsPanel h3,
+.operationsCard strong {
+  margin: 0;
+}
+
+.operationsPanel p,
+.operationsCard span,
+.operationsCircuitList li {
+  margin: 0;
+  color: #5c6473;
+}
+
+.operationsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.operationsCard {
+  border-radius: 16px;
+  padding: 14px;
+  background: #fffdfa;
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  display: grid;
+  gap: 6px;
+}
+
+.operationsCircuitList {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
 .error {
   color: #8c2438;
 }
@@ -51,7 +96,7 @@
 
 @media (max-width: 1024px) {
   .metricGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .layout {
@@ -61,6 +106,10 @@
 
 @media (max-width: 640px) {
   .metricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .operationsGrid {
     grid-template-columns: 1fr;
   }
 }

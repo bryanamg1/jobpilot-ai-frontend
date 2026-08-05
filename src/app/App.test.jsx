@@ -16,8 +16,176 @@ describe('App', () => {
               JSON.stringify({
                 data: {
                   storageMode: 'memory',
-                  metrics: { total: 1, readyToPrepare: 1, blocked: 0 },
-                  latest: [],
+                  metrics: { total: 1, readyToPrepare: 0, awaitingApproval: 1, blocked: 0 },
+                  latest: [
+                    {
+                      id: 'job-1',
+                      source: {
+                        label: 'Manual',
+                        originalUrl: 'https://example.com/jobs/1',
+                      },
+                      jobOffer: {
+                        company: 'Acme Labs',
+                        title: 'Backend Developer',
+                      },
+                      match: {
+                        score: 72,
+                        status: 'AWAITING_APPROVAL',
+                        recommendation: 'REVIEW',
+                        approvals: [],
+                        excludedByRules: [],
+                        explanation: {
+                          matches: ['Node.js'],
+                          gaps: ['English B2'],
+                          risks: ['Salary expectation pending'],
+                        },
+                      },
+                    },
+                  ],
+                },
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/health')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                status: 'ok',
+                storageMode: 'memory',
+                dependencies: {
+                  storage: { status: 'ok' },
+                  queue: { status: 'ok', mode: 'inline' },
+                },
+                integrations: {
+                  gmail: { status: 'configured' },
+                  openai: { status: 'disabled' },
+                },
+                reliability: {
+                  circuits: {
+                    gmail: { state: 'closed' },
+                    openai: { state: 'closed' },
+                    playwright: { state: 'closed' },
+                  },
+                },
+                runtime: {
+                  redisConfigured: false,
+                  requestCorrelation: true,
+                },
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/jobs')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: [
+                  {
+                    id: 'job-1',
+                    source: {
+                      label: 'Manual',
+                      originalUrl: 'https://example.com/jobs/1',
+                    },
+                    jobOffer: {
+                      company: 'Acme Labs',
+                      title: 'Backend Developer',
+                    },
+                    match: {
+                      score: 72,
+                      status: 'AWAITING_APPROVAL',
+                      recommendation: 'REVIEW',
+                      approvals: [],
+                      excludedByRules: [],
+                      explanation: {
+                        matches: ['Node.js'],
+                        gaps: ['English B2'],
+                        risks: ['Salary expectation pending'],
+                      },
+                    },
+                  },
+                ],
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/resumes')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: [],
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/answers')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: [],
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/approvals')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: [],
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/audits')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: [],
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/browser-sessions')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: [],
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/integrations/gmail/status')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: {
+                  configured: true,
+                  connected: false,
+                  emailAddress: null,
+                  labelName: 'Postulaciones/Por revisar',
+                  draftLabelNote: 'Draft labels are limited in Gmail.',
+                  alertQuery: 'job alert',
+                },
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/integrations/gmail/alerts')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: {
+                  query: 'job alert',
+                  messages: [],
                 },
               }),
             ),

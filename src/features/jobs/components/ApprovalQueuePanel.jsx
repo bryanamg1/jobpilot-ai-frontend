@@ -1,12 +1,21 @@
 import { dashboardText } from '../../../constants/dashboardText.js';
 import { JobOfferCard } from './JobOfferCard.jsx';
-import styles from './JobOfferList.module.css';
+import styles from './ApprovalQueuePanel.module.css';
 
-export function JobOfferList({ jobs, onPreviewRequest, previewLoadingJobId }) {
+export function ApprovalQueuePanel({
+  jobs,
+  onPreviewRequest,
+  previewLoadingJobId,
+  onApprove,
+  onReject,
+  reviewPendingJobId,
+  reviewDecision,
+}) {
   return (
     <section className={styles.wrapper}>
       <div className={styles.header}>
-        <h2>{dashboardText.list.title}</h2>
+        <h2>{dashboardText.approval.title}</h2>
+        <p>{dashboardText.approval.subtitle}</p>
       </div>
 
       {jobs.length ? (
@@ -17,11 +26,15 @@ export function JobOfferList({ jobs, onPreviewRequest, previewLoadingJobId }) {
               job={job}
               onPreviewRequest={onPreviewRequest}
               previewLoadingJobId={previewLoadingJobId}
+              onApprove={onApprove}
+              onReject={onReject}
+              reviewPendingJobId={reviewPendingJobId}
+              reviewDecision={reviewDecision}
             />
           ))}
         </div>
       ) : (
-        <div className={styles.empty}>{dashboardText.list.empty}</div>
+        <div className={styles.empty}>{dashboardText.approval.empty}</div>
       )}
     </section>
   );

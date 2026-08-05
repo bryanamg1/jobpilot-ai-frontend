@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { dashboardText } from '../../../constants/dashboardText.js';
+import { applyApiFieldErrors } from '../../../shared/lib/apiValidation.js';
 import { useUpdateProfile } from '../hooks/useUpdateProfile.js';
 import styles from './ProfileEditor.module.css';
 
@@ -37,6 +38,8 @@ export function ProfileEditor({ profile }) {
     register,
     handleSubmit,
     reset,
+    clearErrors,
+    setError,
     formState: { errors },
   } = useForm({
     defaultValues: buildFormValues(profile),
@@ -48,30 +51,42 @@ export function ProfileEditor({ profile }) {
   }, [profile, reset]);
 
   const onSubmit = handleSubmit(async (values) => {
-    await mutation.mutateAsync({
-      name: values.name,
-      headlineTargets: splitCsv(values.headlineTargets),
-      location: values.location,
-      availability: values.availability,
-      modalities: values.modalities,
-      englishLevel: values.englishLevel,
-      salaryExpectation: {
-        amount: values.salaryAmount,
-        currency: values.salaryCurrency,
-        period: values.salaryPeriod,
-      },
-      publicLinks: {
-        github: values.github,
-        linkedin: values.linkedin,
-      },
-      contact: {
-        email: values.email,
-      },
-      projects: splitCsv(values.projects),
-      technologies: splitCsv(values.technologies),
-      knowledgeAreas: splitCsv(values.knowledgeAreas),
-      prohibitedClaims: splitCsv(values.prohibitedClaims),
-    });
+    clearErrors();
+
+    try {
+      await mutation.mutateAsync({
+        name: values.name,
+        headlineTargets: splitCsv(values.headlineTargets),
+        location: values.location,
+        availability: values.availability,
+        modalities: values.modalities,
+        englishLevel: values.englishLevel,
+        salaryExpectation: {
+          amount: values.salaryAmount,
+          currency: values.salaryCurrency,
+          period: values.salaryPeriod,
+        },
+        publicLinks: {
+          github: values.github,
+          linkedin: values.linkedin,
+        },
+        contact: {
+          email: values.email,
+        },
+        projects: splitCsv(values.projects),
+        technologies: splitCsv(values.technologies),
+        knowledgeAreas: splitCsv(values.knowledgeAreas),
+        prohibitedClaims: splitCsv(values.prohibitedClaims),
+      });
+    } catch (error) {
+      const applied = applyApiFieldErrors(error, setError, profileFieldMap);
+      if (!applied) {
+        setError('root.server', {
+          type: 'server',
+          message: error.message,
+        });
+      }
+    }
   });
 
   return (
@@ -179,12 +194,21 @@ export function ProfileEditor({ profile }) {
             {mutation.isPending ? dashboardText.profile.saveBusy : dashboardText.profile.saveIdle}
           </button>
           {mutation.isSuccess ? <p className={styles.success}>{dashboardText.profile.saveSuccess}</p> : null}
-          {mutation.isError ? <p className={styles.error}>{mutation.error.message}</p> : null}
+          {errors.root?.server?.message ? <p className={styles.error}>{errors.root.server.message}</p> : null}
         </div>
       </form>
     </section>
   );
 }
+
+const profileFieldMap = {
+  'contact.email': 'email',
+  'publicLinks.github': 'github',
+  'publicLinks.linkedin': 'linkedin',
+  'salaryExpectation.amount': 'salaryAmount',
+  'salaryExpectation.currency': 'salaryCurrency',
+  'salaryExpectation.period': 'salaryPeriod',
+};
 
 function Field({ label, error, children }) {
   return (
