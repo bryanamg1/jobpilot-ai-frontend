@@ -38,6 +38,14 @@ export function DraftPreviewPanel({
       <div className={styles.metaGrid}>
         <InfoBlock label={draftText.recipient} value={preview.recipient || 'No visible'} />
         <InfoBlock label={draftText.subject} value={preview.subject || draftText.blocked} />
+        <InfoBlock
+          label={draftText.selectedResume}
+          value={
+            preview.selectedResume
+              ? `${preview.selectedResume.label} (${preview.selectedResume.originalFileName})`
+              : draftText.selectedResumeEmpty
+          }
+        />
       </div>
 
       <section className={styles.section}>

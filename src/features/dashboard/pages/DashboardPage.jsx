@@ -17,6 +17,10 @@ import { useJobsQuery } from '../../jobs/hooks/useJobsQuery.js';
 import { useReviewJobDecision } from '../../jobs/hooks/useReviewJobDecision.js';
 import { ProfileEditor } from '../../profile/components/ProfileEditor.jsx';
 import { useProfileQuery } from '../../profile/hooks/useProfileQuery.js';
+import { ResumeManagerPanel } from '../../resumes/components/ResumeManagerPanel.jsx';
+import { useAssignResumeToJob } from '../../resumes/hooks/useAssignResumeToJob.js';
+import { useResumesQuery } from '../../resumes/hooks/useResumesQuery.js';
+import { useUploadResume } from '../../resumes/hooks/useUploadResume.js';
 import { useDashboardQuery } from '../hooks/useDashboardQuery.js';
 import styles from './DashboardPage.module.css';
 
@@ -26,8 +30,11 @@ export function DashboardPage() {
   const dashboardQuery = useDashboardQuery();
   const jobsQuery = useJobsQuery();
   const profileQuery = useProfileQuery();
+  const resumesQuery = useResumesQuery();
   const draftPreviewMutation = useCreateDraftPreview();
   const reviewDecisionMutation = useReviewJobDecision();
+  const uploadResumeMutation = useUploadResume();
+  const assignResumeMutation = useAssignResumeToJob();
   const gmailStatusQuery = useGmailStatusQuery();
   const gmailAlertsQuery = useGmailAlertsQuery(Boolean(gmailStatusQuery.data?.connected));
   const connectGmailMutation = useConnectGmail();
@@ -40,7 +47,9 @@ export function DashboardPage() {
     latest: [],
   };
   const jobs = jobsQuery.data || [];
+  const resumes = resumesQuery.data || [];
   const approvalJobs = jobs.filter((job) => job.match.status === 'AWAITING_APPROVAL');
+  const selectedPreviewJob = jobs.find((job) => job.id === selectedPreviewJobId) ?? null;
 
   function handlePreviewRequest(jobId) {
     setSelectedPreviewJobId(jobId);
@@ -88,6 +97,23 @@ export function DashboardPage() {
     );
   }
 
+  function handleUploadResume(payload) {
+    return uploadResumeMutation.mutateAsync(payload);
+  }
+
+  function handleAssignResume({ jobId, resumeId }) {
+    assignResumeMutation.mutate(
+      { jobId, resumeId },
+      {
+        onSuccess: () => {
+          if (selectedPreviewJobId === jobId) {
+            draftPreviewMutation.mutate(jobId);
+          }
+        },
+      },
+    );
+  }
+
   return (
     <AppShell
       eyebrow={dashboardText.shell.eyebrow}
@@ -123,6 +149,19 @@ export function DashboardPage() {
           {profileQuery.isLoading ? <PanelMessage message="Cargando perfil maestro..." /> : null}
           {profileQuery.isError ? <PanelMessage message={profileQuery.error.message} tone="error" /> : null}
           {profileQuery.data ? <ProfileEditor profile={profileQuery.data} /> : null}
+          <ResumeManagerPanel
+            resumes={resumes}
+            isLoading={resumesQuery.isLoading}
+            error={resumesQuery.error}
+            selectedJob={selectedPreviewJob}
+            onUploadResume={handleUploadResume}
+            isUploading={uploadResumeMutation.isPending}
+            uploadError={uploadResumeMutation.error}
+            uploadSuccess={uploadResumeMutation.isSuccess}
+            onAssignResume={handleAssignResume}
+            isAssigning={assignResumeMutation.isPending}
+            assignError={assignResumeMutation.error}
+          />
         </div>
         <div className={styles.right}>
           <DraftPreviewPanel

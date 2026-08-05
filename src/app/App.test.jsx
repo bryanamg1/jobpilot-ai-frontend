@@ -82,6 +82,16 @@ describe('App', () => {
           );
         }
 
+        if (String(url).includes('/resumes')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: [],
+              }),
+            ),
+          );
+        }
+
         if (String(url).includes('/integrations/gmail/status')) {
           return Promise.resolve(
             new Response(

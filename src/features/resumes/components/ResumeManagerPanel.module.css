@@ -1,0 +1,104 @@
+.card {
+  background: rgba(255, 253, 250, 0.96);
+  border-radius: 24px;
+  padding: 22px;
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
+  display: grid;
+  gap: 18px;
+}
+
+.header h2,
+.assignmentHeader h3 {
+  margin: 0;
+}
+
+.header p,
+.assignmentHeader p,
+.helper,
+.message {
+  margin: 8px 0 0;
+  color: #5c6473;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field span {
+  font-size: 0.92rem;
+  color: #4c5564;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(31, 36, 48, 0.14);
+  padding: 11px 13px;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.actions button {
+  border: none;
+  border-radius: 14px;
+  padding: 11px 16px;
+  background: #172033;
+  color: #f7f2e7;
+  font: inherit;
+  cursor: pointer;
+}
+
+.actions button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  background: #f0e8da !important;
+  color: #5b4633 !important;
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+}
+
+.resumeItem {
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 18px;
+  padding: 14px;
+  display: grid;
+  gap: 4px;
+}
+
+.assignment {
+  border-top: 1px solid rgba(31, 36, 48, 0.08);
+  padding-top: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.success {
+  margin: 0;
+  color: #185834;
+}
+
+.error {
+  margin: 0;
+  color: #8c2438;
+}
