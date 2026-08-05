@@ -24,6 +24,36 @@ describe('App', () => {
           );
         }
 
+        if (String(url).includes('/integrations/gmail/status')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: {
+                  configured: true,
+                  connected: false,
+                  emailAddress: null,
+                  labelName: 'Postulaciones/Por revisar',
+                  draftLabelNote: 'Draft labels are limited in Gmail.',
+                  alertQuery: 'job alert',
+                },
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/integrations/gmail/alerts')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: {
+                  query: 'job alert',
+                  messages: [],
+                },
+              }),
+            ),
+          );
+        }
+
         return Promise.resolve(
           new Response(
             JSON.stringify({

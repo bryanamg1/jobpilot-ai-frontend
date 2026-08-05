@@ -1,7 +1,16 @@
 import { dashboardText } from '../../../constants/dashboardText.js';
 import styles from './DraftPreviewPanel.module.css';
 
-export function DraftPreviewPanel({ preview, isLoading, error }) {
+export function DraftPreviewPanel({
+  preview,
+  isLoading,
+  error,
+  gmailStatus,
+  onCreateGmailDraft,
+  isCreatingGmailDraft,
+  gmailDraftResult,
+  gmailDraftError,
+}) {
   const draftText = dashboardText.draft;
 
   if (isLoading) {
@@ -35,6 +44,42 @@ export function DraftPreviewPanel({ preview, isLoading, error }) {
         <h3>{draftText.body}</h3>
         <pre className={styles.body}>{preview.body || draftText.blocked}</pre>
       </section>
+
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.primaryButton}
+          onClick={() => onCreateGmailDraft(preview.jobId)}
+          disabled={
+            isCreatingGmailDraft ||
+            !gmailStatus?.connected ||
+            preview.status === 'BLOCKED' ||
+            !preview.recipient
+          }
+        >
+          {isCreatingGmailDraft ? draftText.gmailDraftBusy : draftText.gmailDraftIdle}
+        </button>
+        {!gmailStatus?.connected ? <p className={styles.helper}>{draftText.gmailDraftConnectHint}</p> : null}
+      </div>
+
+      {gmailDraftResult ? (
+        <section className={styles.section}>
+          <h3>{draftText.gmailDraftSuccess}</h3>
+          <p className={styles.empty}>{gmailDraftResult.subject}</p>
+          <ul className={styles.list}>
+            {gmailDraftResult.warnings.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {gmailDraftError ? (
+        <section className={`${styles.section} ${styles.error}`}>
+          <h3>{draftText.warnings}</h3>
+          <p className={styles.empty}>{gmailDraftError.message}</p>
+        </section>
+      ) : null}
 
       <FactSection title={draftText.highlights} items={preview.highlights} />
       <FactSection

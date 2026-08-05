@@ -84,6 +84,31 @@
   line-height: 1.6;
 }
 
+.actions {
+  display: grid;
+  gap: 10px;
+}
+
+.primaryButton {
+  border: none;
+  border-radius: 14px;
+  padding: 11px 16px;
+  background: #172033;
+  color: #f7f2e7;
+  font: inherit;
+  cursor: pointer;
+}
+
+.primaryButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.helper {
+  margin: 0;
+  color: #5c6473;
+}
+
 .list,
 .factList {
   margin: 0;

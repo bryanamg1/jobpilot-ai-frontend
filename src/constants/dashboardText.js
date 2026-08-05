@@ -75,5 +75,23 @@ export const dashboardText = {
     statusReady: 'Listo para revisar',
     statusReview: 'Requiere revision humana',
     statusBlocked: 'No debe prepararse',
+    gmailDraftIdle: 'Crear borrador en Gmail',
+    gmailDraftBusy: 'Creando borrador en Gmail...',
+    gmailDraftSuccess: 'Borrador creado en Gmail.',
+    gmailDraftConnectHint: 'Conecta Gmail para crear el borrador real.',
+  },
+  gmail: {
+    title: 'Integracion Gmail',
+    disconnected: 'Gmail no conectado',
+    connected: 'Gmail conectado',
+    connect: 'Conectar Gmail',
+    connecting: 'Abriendo autorizacion...',
+    disconnect: 'Desconectar',
+    alertsTitle: 'Alertas recientes',
+    alertsEmpty: 'No hay alertas para la consulta actual.',
+    alertsLoading: 'Cargando alertas...',
+    createLabelNote:
+      'Gmail no permite aplicar etiquetas personalizadas a drafts. La etiqueta se mantiene para flujos de alertas y tracking interno.',
+    attachmentNote: 'Antes de enviar, adjunta manualmente el CV correcto.',
   },
 };
