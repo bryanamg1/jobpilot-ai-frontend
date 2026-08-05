@@ -119,14 +119,39 @@ export function DraftPreviewPanel({
                   </span>
                 </div>
                 <p className={styles.empty}>{item.answer}</p>
-                <p className={styles.helper}>
-                  {item.kind} · {item.certainty} · {item.matchReason}
-                </p>
+                <p className={styles.helper}>{`${item.kind} - ${item.certainty} - ${item.matchReason}`}</p>
+                {item.approvalStatus ? (
+                  <p className={styles.helper}>
+                    {draftText.sensitiveApprovals}: {item.approvalStatus}
+                  </p>
+                ) : null}
               </article>
             ))}
           </div>
         ) : (
           <p className={styles.empty}>{draftText.suggestedAnswersEmpty}</p>
+        )}
+      </section>
+
+      <section className={styles.section}>
+        <h3>{draftText.sensitiveApprovals}</h3>
+        {preview.approvalRequests.length ? (
+          <div className={styles.suggestionList}>
+            {preview.approvalRequests.map((item) => (
+              <article key={item.id} className={styles.suggestionCard}>
+                <div className={styles.suggestionHeader}>
+                  <strong>{item.approvalKind}</strong>
+                  <span className={`${styles.badge} ${styles[mapApprovalTone(item.status)]}`}>
+                    {item.status}
+                  </span>
+                </div>
+                <p className={styles.empty}>{item.payload.reason}</p>
+                {item.payload.note ? <p className={styles.helper}>Nota: {item.payload.note}</p> : null}
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className={styles.empty}>{draftText.sensitiveApprovalsEmpty}</p>
         )}
       </section>
 
@@ -202,4 +227,14 @@ function mapSuggestionTone(usageStatus) {
     return 'warn';
   }
   return 'bad';
+}
+
+function mapApprovalTone(status) {
+  if (status === 'APPROVED') {
+    return 'good';
+  }
+  if (status === 'REJECTED') {
+    return 'bad';
+  }
+  return 'warn';
 }
