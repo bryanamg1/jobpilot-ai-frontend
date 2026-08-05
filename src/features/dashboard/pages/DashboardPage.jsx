@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AnswerLibraryPanel } from '../../answers/components/AnswerLibraryPanel.jsx';
 import { dashboardText } from '../../../constants/dashboardText.js';
 import { AppShell } from '../../../shared/components/AppShell.jsx';
 import { GmailAlertsPanel } from '../../gmail/components/GmailAlertsPanel.jsx';
@@ -162,6 +163,7 @@ export function DashboardPage() {
             isAssigning={assignResumeMutation.isPending}
             assignError={assignResumeMutation.error}
           />
+          <AnswerLibraryPanel />
         </div>
         <div className={styles.right}>
           <DraftPreviewPanel

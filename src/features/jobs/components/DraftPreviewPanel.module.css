@@ -109,6 +109,26 @@
   color: #5c6473;
 }
 
+.suggestionList {
+  display: grid;
+  gap: 12px;
+}
+
+.suggestionCard {
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  display: grid;
+  gap: 8px;
+}
+
+.suggestionHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
 .list,
 .factList {
   margin: 0;

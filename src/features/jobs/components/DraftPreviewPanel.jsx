@@ -107,6 +107,30 @@ export function DraftPreviewPanel({
       />
 
       <section className={styles.section}>
+        <h3>{draftText.suggestedAnswers}</h3>
+        {preview.suggestedAnswers.length ? (
+          <div className={styles.suggestionList}>
+            {preview.suggestedAnswers.map((item) => (
+              <article key={item.id} className={styles.suggestionCard}>
+                <div className={styles.suggestionHeader}>
+                  <strong>{item.question}</strong>
+                  <span className={`${styles.badge} ${styles[mapSuggestionTone(item.usageStatus)]}`}>
+                    {item.usageStatus}
+                  </span>
+                </div>
+                <p className={styles.empty}>{item.answer}</p>
+                <p className={styles.helper}>
+                  {item.kind} · {item.certainty} · {item.matchReason}
+                </p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className={styles.empty}>{draftText.suggestedAnswersEmpty}</p>
+        )}
+      </section>
+
+      <section className={styles.section}>
         <h3>{draftText.facts}</h3>
         {preview.factsUsed.length ? (
           <ul className={styles.factList}>
@@ -165,6 +189,16 @@ function mapTone(status) {
     return 'good';
   }
   if (status === 'REVIEW_REQUIRED') {
+    return 'warn';
+  }
+  return 'bad';
+}
+
+function mapSuggestionTone(usageStatus) {
+  if (usageStatus === 'REFERENCE_ONLY') {
+    return 'good';
+  }
+  if (usageStatus === 'REVIEW_REQUIRED') {
     return 'warn';
   }
   return 'bad';
