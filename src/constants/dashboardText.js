@@ -9,6 +9,7 @@ export const dashboardText = {
   metrics: {
     total: 'Vacantes analizadas',
     ready: 'Listas para preparar',
+    awaitingApproval: 'Pendientes de aprobacion',
     blocked: 'Bloqueadas por reglas',
   },
   form: {
@@ -57,5 +58,22 @@ export const dashboardText = {
     risks: 'Riesgos',
     approvals: 'Requiere aprobacion',
     blocked: 'Bloqueos',
+    previewAction: 'Previsualizar borrador',
+    previewBusy: 'Generando borrador...',
+  },
+  draft: {
+    title: 'Previsualizacion del borrador',
+    empty: 'Genera un borrador desde una vacante para revisar asunto, cuerpo y advertencias antes de Gmail.',
+    recipient: 'Destinatario',
+    subject: 'Asunto',
+    body: 'Cuerpo',
+    highlights: 'Puntos fuertes usados',
+    facts: 'Hechos utilizados',
+    warnings: 'Advertencias',
+    blocked: 'Bloqueado',
+    approvals: 'Aprobaciones requeridas',
+    statusReady: 'Listo para revisar',
+    statusReview: 'Requiere revision humana',
+    statusBlocked: 'No debe prepararse',
   },
 };

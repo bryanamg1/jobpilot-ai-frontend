@@ -1,21 +1,31 @@
+import { useState } from 'react';
 import { dashboardText } from '../../../constants/dashboardText.js';
 import { AppShell } from '../../../shared/components/AppShell.jsx';
+import { DraftPreviewPanel } from '../../jobs/components/DraftPreviewPanel.jsx';
 import { JobOfferList } from '../../jobs/components/JobOfferList.jsx';
 import { ManualJobForm } from '../../jobs/components/ManualJobForm.jsx';
+import { useCreateDraftPreview } from '../../jobs/hooks/useCreateDraftPreview.js';
 import { ProfileEditor } from '../../profile/components/ProfileEditor.jsx';
 import { useProfileQuery } from '../../profile/hooks/useProfileQuery.js';
 import { useDashboardQuery } from '../hooks/useDashboardQuery.js';
 import styles from './DashboardPage.module.css';
 
 export function DashboardPage() {
+  const [selectedPreviewJobId, setSelectedPreviewJobId] = useState(null);
   const dashboardQuery = useDashboardQuery();
   const profileQuery = useProfileQuery();
+  const draftPreviewMutation = useCreateDraftPreview();
 
   const summary = dashboardQuery.data || {
     storageMode: 'memory',
-    metrics: { total: 0, readyToPrepare: 0, blocked: 0 },
+    metrics: { total: 0, readyToPrepare: 0, awaitingApproval: 0, blocked: 0 },
     latest: [],
   };
+
+  function handlePreviewRequest(jobId) {
+    setSelectedPreviewJobId(jobId);
+    draftPreviewMutation.mutate(jobId);
+  }
 
   return (
     <AppShell
@@ -26,6 +36,7 @@ export function DashboardPage() {
       <section className={styles.metricGrid}>
         <MetricCard label={dashboardText.metrics.total} value={summary.metrics.total} />
         <MetricCard label={dashboardText.metrics.ready} value={summary.metrics.readyToPrepare} />
+        <MetricCard label={dashboardText.metrics.awaitingApproval} value={summary.metrics.awaitingApproval} />
         <MetricCard label={dashboardText.metrics.blocked} value={summary.metrics.blocked} />
         <MetricCard label={dashboardText.shell.storageLabel} value={summary.storageMode} />
       </section>
@@ -38,9 +49,20 @@ export function DashboardPage() {
           {profileQuery.data ? <ProfileEditor profile={profileQuery.data} /> : null}
         </div>
         <div className={styles.right}>
+          <DraftPreviewPanel
+            preview={draftPreviewMutation.data?.data ?? null}
+            isLoading={draftPreviewMutation.isPending}
+            error={draftPreviewMutation.error}
+          />
           {dashboardQuery.isLoading ? <PanelMessage message="Cargando vacantes..." /> : null}
           {dashboardQuery.isError ? <PanelMessage message={dashboardQuery.error.message} tone="error" /> : null}
-          {!dashboardQuery.isLoading && !dashboardQuery.isError ? <JobOfferList jobs={summary.latest} /> : null}
+          {!dashboardQuery.isLoading && !dashboardQuery.isError ? (
+            <JobOfferList
+              jobs={summary.latest}
+              onPreviewRequest={handlePreviewRequest}
+              previewLoadingJobId={draftPreviewMutation.isPending ? selectedPreviewJobId : null}
+            />
+          ) : null}
         </div>
       </section>
     </AppShell>

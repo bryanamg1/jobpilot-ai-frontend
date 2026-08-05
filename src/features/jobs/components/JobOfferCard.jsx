@@ -2,8 +2,9 @@ import { dashboardText } from '../../../constants/dashboardText.js';
 import { recommendationMeta, statusMeta } from '../../../constants/statusMeta.js';
 import styles from './JobOfferCard.module.css';
 
-export function JobOfferCard({ job }) {
+export function JobOfferCard({ job, onPreviewRequest, previewLoadingJobId }) {
   const status = statusMeta[job.match.status] || statusMeta.ANALYZED;
+  const isPreviewLoading = previewLoadingJobId === job.id;
 
   return (
     <article className={styles.card}>
@@ -45,6 +46,17 @@ export function JobOfferCard({ job }) {
           </ul>
         </div>
       ) : null}
+
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.previewButton}
+          onClick={() => onPreviewRequest(job.id)}
+          disabled={isPreviewLoading}
+        >
+          {isPreviewLoading ? dashboardText.list.previewBusy : dashboardText.list.previewAction}
+        </button>
+      </div>
     </article>
   );
 }

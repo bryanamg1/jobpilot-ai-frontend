@@ -10,3 +10,9 @@ export function createManualJob(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function createDraftPreview(jobId) {
+  return fetchJson(`/jobs/${jobId}/draft-preview`, {
+    method: 'POST',
+  });
+}
