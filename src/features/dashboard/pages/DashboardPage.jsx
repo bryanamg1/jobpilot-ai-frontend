@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { dashboardText } from '../../../constants/dashboardText.js';
 import { AppShell } from '../../../shared/components/AppShell.jsx';
+import { GmailAlertsPanel } from '../../gmail/components/GmailAlertsPanel.jsx';
+import { GmailIntegrationPanel } from '../../gmail/components/GmailIntegrationPanel.jsx';
+import { useConnectGmail } from '../../gmail/hooks/useConnectGmail.js';
+import { useCreateGmailDraft } from '../../gmail/hooks/useCreateGmailDraft.js';
+import { useDisconnectGmail } from '../../gmail/hooks/useDisconnectGmail.js';
+import { useGmailAlertsQuery } from '../../gmail/hooks/useGmailAlertsQuery.js';
+import { useGmailStatusQuery } from '../../gmail/hooks/useGmailStatusQuery.js';
 import { DraftPreviewPanel } from '../../jobs/components/DraftPreviewPanel.jsx';
 import { JobOfferList } from '../../jobs/components/JobOfferList.jsx';
 import { ManualJobForm } from '../../jobs/components/ManualJobForm.jsx';
@@ -15,6 +22,11 @@ export function DashboardPage() {
   const dashboardQuery = useDashboardQuery();
   const profileQuery = useProfileQuery();
   const draftPreviewMutation = useCreateDraftPreview();
+  const gmailStatusQuery = useGmailStatusQuery();
+  const gmailAlertsQuery = useGmailAlertsQuery(Boolean(gmailStatusQuery.data?.connected));
+  const connectGmailMutation = useConnectGmail();
+  const disconnectGmailMutation = useDisconnectGmail();
+  const createGmailDraftMutation = useCreateGmailDraft();
 
   const summary = dashboardQuery.data || {
     storageMode: 'memory',
@@ -44,6 +56,21 @@ export function DashboardPage() {
       <section className={styles.layout}>
         <div className={styles.left}>
           <ManualJobForm />
+          <GmailIntegrationPanel
+            status={gmailStatusQuery.data}
+            isLoading={gmailStatusQuery.isLoading}
+            error={gmailStatusQuery.error}
+            onConnect={() => connectGmailMutation.mutate()}
+            onDisconnect={() => disconnectGmailMutation.mutate()}
+            isConnecting={connectGmailMutation.isPending}
+            isDisconnecting={disconnectGmailMutation.isPending}
+          />
+          <GmailAlertsPanel
+            alerts={gmailAlertsQuery.data}
+            isLoading={gmailAlertsQuery.isLoading}
+            error={gmailAlertsQuery.error}
+            isConnected={Boolean(gmailStatusQuery.data?.connected)}
+          />
           {profileQuery.isLoading ? <PanelMessage message="Cargando perfil maestro..." /> : null}
           {profileQuery.isError ? <PanelMessage message={profileQuery.error.message} tone="error" /> : null}
           {profileQuery.data ? <ProfileEditor profile={profileQuery.data} /> : null}
@@ -53,6 +80,11 @@ export function DashboardPage() {
             preview={draftPreviewMutation.data?.data ?? null}
             isLoading={draftPreviewMutation.isPending}
             error={draftPreviewMutation.error}
+            gmailStatus={gmailStatusQuery.data}
+            onCreateGmailDraft={(jobId) => createGmailDraftMutation.mutate(jobId)}
+            isCreatingGmailDraft={createGmailDraftMutation.isPending}
+            gmailDraftResult={createGmailDraftMutation.data?.data ?? null}
+            gmailDraftError={createGmailDraftMutation.error}
           />
           {dashboardQuery.isLoading ? <PanelMessage message="Cargando vacantes..." /> : null}
           {dashboardQuery.isError ? <PanelMessage message={dashboardQuery.error.message} tone="error" /> : null}
