@@ -59,6 +59,13 @@
   color: #a32942;
 }
 
+.errorList {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+}
+
 .answerCard {
   background: #fffdfa;
   border-radius: 18px;

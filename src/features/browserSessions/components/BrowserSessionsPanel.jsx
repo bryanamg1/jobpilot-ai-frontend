@@ -1,0 +1,209 @@
+import { useMemo, useState } from 'react';
+import { dashboardText } from '../../../constants/dashboardText.js';
+import styles from './BrowserSessionsPanel.module.css';
+
+export function BrowserSessionsPanel({
+  sessions,
+  isLoading,
+  error,
+  onStartSession,
+  onRefreshSession,
+  onNavigateSession,
+  onCaptureJob,
+  onCloseSession,
+  pendingAction,
+}) {
+  const text = dashboardText.browserSessions;
+  const [startUrl, setStartUrl] = useState('');
+  const [provider, setProvider] = useState('LINKEDIN_JOBS');
+  const [urlBySessionId, setUrlBySessionId] = useState({});
+
+  const activeSessions = useMemo(() => sessions || [], [sessions]);
+
+  return (
+    <section className={styles.card}>
+      <div className={styles.header}>
+        <h2>{text.title}</h2>
+        <p>{text.subtitle}</p>
+      </div>
+
+      <div className={styles.startRow}>
+        <label className={styles.field}>
+          <span>{text.providerLabel}</span>
+          <select value={provider} onChange={(event) => setProvider(event.target.value)}>
+            {Object.entries(text.providers).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className={styles.field}>
+          <span>{text.navigateLabel}</span>
+          <input
+            value={startUrl}
+            placeholder={text.navigatePlaceholder}
+            onChange={(event) => setStartUrl(event.target.value)}
+          />
+        </label>
+        <button
+          type="button"
+          onClick={() => onStartSession(provider, startUrl.trim() || undefined)}
+          disabled={pendingAction.kind === 'start'}
+        >
+          {pendingAction.kind === 'start' ? text.startBusy : text.startIdle}
+        </button>
+      </div>
+      <p className={styles.meta}>{text.providerHint}</p>
+
+      {isLoading ? <p className={styles.message}>Cargando sesiones...</p> : null}
+      {error ? <p className={styles.error}>{error.message}</p> : null}
+
+      {!isLoading && !error ? (
+        activeSessions.length ? (
+          <div className={styles.list}>
+            {activeSessions.map((session) => {
+              const isRefreshing = pendingAction.kind === 'refresh' && pendingAction.sessionId === session.id;
+              const isNavigating = pendingAction.kind === 'navigate' && pendingAction.sessionId === session.id;
+              const isCapturing = pendingAction.kind === 'capture' && pendingAction.sessionId === session.id;
+              const isClosing = pendingAction.kind === 'close' && pendingAction.sessionId === session.id;
+              const localUrl = urlBySessionId[session.id] ?? session.metadata.currentUrl ?? '';
+
+              return (
+                <article key={session.id} className={styles.sessionCard}>
+                  <div className={styles.sessionHeader}>
+                    <strong>{text.providers[session.provider] ?? session.provider}</strong>
+                    <span className={`${styles.badge} ${styles[mapTone(session.status)]}`}>{session.status}</span>
+                  </div>
+
+                  <p className={styles.meta}>{session.metadata.pageTitle || session.metadata.currentUrl}</p>
+                  <p className={styles.meta}>{session.metadata.currentUrl}</p>
+                  <p className={styles.meta}>
+                    {text.surfaceLabel}: {resolveSurfaceLabel(session.metadata, text)}
+                  </p>
+
+                  {session.metadata.requiresAttention ? (
+                    <div className={styles.attention}>
+                      <strong>{text.attentionTitle}</strong>
+                      <ul>
+                        {(session.metadata.attentionReasons || []).map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {!session.metadata.runtimeAvailable ? <p className={styles.error}>{text.runtimeUnavailable}</p> : null}
+
+                  <div className={styles.signalBlock}>
+                    <strong>{text.hiringSignals}</strong>
+                    <p className={styles.meta}>
+                      {session.metadata.hiringSignals?.length
+                        ? session.metadata.hiringSignals.join(', ')
+                        : text.hiringSignalsEmpty}
+                    </p>
+                  </div>
+
+                  <div className={styles.signalBlock}>
+                    <strong>{text.visibleEmails}</strong>
+                    <p className={styles.meta}>
+                      {session.metadata.visibleEmails?.length
+                        ? session.metadata.visibleEmails.join(', ')
+                        : text.visibleEmailsEmpty}
+                    </p>
+                  </div>
+
+                  {session.metadata.lastCapturedJobId ? (
+                    <p className={styles.meta}>
+                      {text.lastCaptured}: {session.metadata.lastCapturedJobId}
+                    </p>
+                  ) : null}
+
+                  <label className={styles.field}>
+                    <span>{text.navigateLabel}</span>
+                    <input
+                      value={localUrl}
+                      placeholder={text.navigatePlaceholder}
+                      onChange={(event) =>
+                        setUrlBySessionId((current) => ({
+                          ...current,
+                          [session.id]: event.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+
+                  <div className={styles.actions}>
+                    <button
+                      type="button"
+                      onClick={() => onNavigateSession(session.id, localUrl)}
+                      disabled={isNavigating || !session.metadata.runtimeAvailable}
+                    >
+                      {isNavigating ? text.navigateBusy : text.navigateIdle}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onRefreshSession(session.id)}
+                      disabled={isRefreshing || !session.metadata.runtimeAvailable}
+                    >
+                      {isRefreshing ? text.refreshBusy : text.refreshIdle}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onCaptureJob(session.id)}
+                      disabled={isCapturing || !session.metadata.runtimeAvailable}
+                    >
+                      {isCapturing ? text.captureBusy : text.captureIdle}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.secondaryButton}
+                      onClick={() => onCloseSession(session.id)}
+                      disabled={isClosing}
+                    >
+                      {isClosing ? text.closeBusy : text.closeIdle}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <p className={styles.message}>{text.empty}</p>
+        )
+      ) : null}
+    </section>
+  );
+}
+
+function mapTone(status) {
+  if (status === 'ACTIVE') {
+    return 'good';
+  }
+
+  if (status === 'ATTENTION_REQUIRED') {
+    return 'warn';
+  }
+
+  return 'bad';
+}
+
+function resolveSurfaceLabel(metadata = {}, text) {
+  if (metadata.isJobView || metadata.isJobsSection) {
+    return text.surfaces.jobs;
+  }
+
+  if (metadata.isPostSearchSection) {
+    return text.surfaces.search;
+  }
+
+  if (metadata.isFeedSection) {
+    return text.surfaces.feed;
+  }
+
+  if (metadata.isPostDetail) {
+    return text.surfaces.post;
+  }
+
+  return text.surfaces.unknown;
+}

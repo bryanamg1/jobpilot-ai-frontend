@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { dashboardText } from '../../../constants/dashboardText.js';
+import { getApiValidationMessages } from '../../../shared/lib/apiValidation.js';
 import { useAnswersQuery } from '../hooks/useAnswersQuery.js';
 import { useCreateAnswer } from '../hooks/useCreateAnswer.js';
 import { useDeleteAnswer } from '../hooks/useDeleteAnswer.js';
@@ -41,13 +42,23 @@ export function AnswerLibraryPanel() {
   const updateMutation = useUpdateAnswer();
   const deleteMutation = useDeleteAnswer();
   const [createForm, setCreateForm] = useState(defaultForm);
+  const [createValidationError, setCreateValidationError] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
   async function handleCreateSubmit(event) {
     event.preventDefault();
+    const payload = buildPayload(createForm);
+    const validationError = getAnswerFormValidationError(payload);
+
+    if (validationError) {
+      setCreateValidationError(validationError);
+      return;
+    }
+
     try {
-      await createMutation.mutateAsync(buildPayload(createForm));
+      await createMutation.mutateAsync(payload);
       setCreateForm(defaultForm);
+      setCreateValidationError(null);
     } catch {
       // Mutation state already exposes the error.
     }
@@ -61,13 +72,20 @@ export function AnswerLibraryPanel() {
       </div>
 
       <form className={styles.form} onSubmit={handleCreateSubmit}>
-        <AnswerFields values={createForm} onChange={setCreateForm} />
+        <AnswerFields
+          values={createForm}
+          onChange={(updater) => {
+            setCreateValidationError(null);
+            setCreateForm(updater);
+          }}
+        />
         <div className={styles.actions}>
           <button type="submit" disabled={createMutation.isPending}>
             {createMutation.isPending ? text.createBusy : text.createIdle}
           </button>
           {createMutation.isSuccess ? <p className={styles.success}>{text.createSuccess}</p> : null}
-          {createMutation.isError ? <p className={styles.error}>{createMutation.error.message}</p> : null}
+          {createValidationError ? <p className={styles.error}>{createValidationError}</p> : null}
+          {createMutation.isError ? <ValidationErrors error={createMutation.error} /> : null}
         </div>
       </form>
 
@@ -141,16 +159,32 @@ function EditableAnswerCard({ item, onCancel, onSave, isSaving, error }) {
     certainty: item.certainty,
     tags: item.tags.join(', '),
   });
+  const [validationError, setValidationError] = useState(null);
   const text = dashboardText.answers;
 
   async function handleSubmit(event) {
     event.preventDefault();
-    await onSave(buildPayload(form));
+    const payload = buildPayload(form);
+    const nextValidationError = getAnswerFormValidationError(payload);
+
+    if (nextValidationError) {
+      setValidationError(nextValidationError);
+      return;
+    }
+
+    setValidationError(null);
+    await onSave(payload);
   }
 
   return (
     <form className={styles.answerCard} onSubmit={handleSubmit}>
-      <AnswerFields values={form} onChange={setForm} />
+      <AnswerFields
+        values={form}
+        onChange={(updater) => {
+          setValidationError(null);
+          setForm(updater);
+        }}
+      />
       <div className={styles.actions}>
         <button type="submit" disabled={isSaving}>
           {isSaving ? text.updateBusy : text.updateIdle}
@@ -158,7 +192,8 @@ function EditableAnswerCard({ item, onCancel, onSave, isSaving, error }) {
         <button type="button" className={styles.secondaryButton} onClick={onCancel}>
           {text.cancelIdle}
         </button>
-        {error ? <p className={styles.error}>{error.message}</p> : null}
+        {validationError ? <p className={styles.error}>{validationError}</p> : null}
+        {error ? <ValidationErrors error={error} /> : null}
       </div>
     </form>
   );
@@ -227,6 +262,40 @@ function buildPayload(form) {
       .map((item) => item.trim())
       .filter(Boolean),
   };
+}
+
+function getAnswerFormValidationError(payload) {
+  if (!payload.question) {
+    return 'La pregunta es obligatoria.';
+  }
+
+  if (!payload.answer) {
+    return 'La respuesta es obligatoria.';
+  }
+
+  return null;
+}
+
+function ValidationErrors({ error }) {
+  const messages = getValidationMessages(error);
+
+  if (!messages.length) {
+    return <p className={styles.error}>{error.message}</p>;
+  }
+
+  return (
+    <ul className={styles.errorList}>
+      {messages.map((message) => (
+        <li key={message} className={styles.error}>
+          {message}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function getValidationMessages(error) {
+  return getApiValidationMessages(error);
 }
 
 function mapUsageLabel(certainty) {

@@ -48,6 +48,36 @@ describe('App', () => {
           );
         }
 
+        if (String(url).includes('/health')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                status: 'ok',
+                storageMode: 'memory',
+                dependencies: {
+                  storage: { status: 'ok' },
+                  queue: { status: 'ok', mode: 'inline' },
+                },
+                integrations: {
+                  gmail: { status: 'configured' },
+                  openai: { status: 'disabled' },
+                },
+                reliability: {
+                  circuits: {
+                    gmail: { state: 'closed' },
+                    openai: { state: 'closed' },
+                    playwright: { state: 'closed' },
+                  },
+                },
+                runtime: {
+                  redisConfigured: false,
+                  requestCorrelation: true,
+                },
+              }),
+            ),
+          );
+        }
+
         if (String(url).includes('/jobs')) {
           return Promise.resolve(
             new Response(
@@ -103,6 +133,26 @@ describe('App', () => {
         }
 
         if (String(url).includes('/approvals')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: [],
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/audits')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: [],
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/browser-sessions')) {
           return Promise.resolve(
             new Response(
               JSON.stringify({
