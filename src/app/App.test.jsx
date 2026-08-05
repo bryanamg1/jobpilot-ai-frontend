@@ -17,8 +17,66 @@ describe('App', () => {
                 data: {
                   storageMode: 'memory',
                   metrics: { total: 1, readyToPrepare: 0, awaitingApproval: 1, blocked: 0 },
-                  latest: [],
+                  latest: [
+                    {
+                      id: 'job-1',
+                      source: {
+                        label: 'Manual',
+                        originalUrl: 'https://example.com/jobs/1',
+                      },
+                      jobOffer: {
+                        company: 'Acme Labs',
+                        title: 'Backend Developer',
+                      },
+                      match: {
+                        score: 72,
+                        status: 'AWAITING_APPROVAL',
+                        recommendation: 'REVIEW',
+                        approvals: [],
+                        excludedByRules: [],
+                        explanation: {
+                          matches: ['Node.js'],
+                          gaps: ['English B2'],
+                          risks: ['Salary expectation pending'],
+                        },
+                      },
+                    },
+                  ],
                 },
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/jobs')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: [
+                  {
+                    id: 'job-1',
+                    source: {
+                      label: 'Manual',
+                      originalUrl: 'https://example.com/jobs/1',
+                    },
+                    jobOffer: {
+                      company: 'Acme Labs',
+                      title: 'Backend Developer',
+                    },
+                    match: {
+                      score: 72,
+                      status: 'AWAITING_APPROVAL',
+                      recommendation: 'REVIEW',
+                      approvals: [],
+                      excludedByRules: [],
+                      explanation: {
+                        matches: ['Node.js'],
+                        gaps: ['English B2'],
+                        risks: ['Salary expectation pending'],
+                      },
+                    },
+                  },
+                ],
               }),
             ),
           );

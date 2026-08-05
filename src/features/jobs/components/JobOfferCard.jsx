@@ -2,9 +2,21 @@ import { dashboardText } from '../../../constants/dashboardText.js';
 import { recommendationMeta, statusMeta } from '../../../constants/statusMeta.js';
 import styles from './JobOfferCard.module.css';
 
-export function JobOfferCard({ job, onPreviewRequest, previewLoadingJobId }) {
+export function JobOfferCard({
+  job,
+  onPreviewRequest,
+  previewLoadingJobId,
+  onApprove,
+  onReject,
+  reviewPendingJobId,
+  reviewDecision,
+}) {
   const status = statusMeta[job.match.status] || statusMeta.ANALYZED;
   const isPreviewLoading = previewLoadingJobId === job.id;
+  const isApprovalLoading = reviewPendingJobId === job.id && reviewDecision === 'approve';
+  const isRejectLoading = reviewPendingJobId === job.id && reviewDecision === 'reject';
+  const isReviewBusy = isApprovalLoading || isRejectLoading;
+  const canReview = typeof onApprove === 'function' && typeof onReject === 'function';
 
   return (
     <article className={styles.card}>
@@ -52,10 +64,30 @@ export function JobOfferCard({ job, onPreviewRequest, previewLoadingJobId }) {
           type="button"
           className={styles.previewButton}
           onClick={() => onPreviewRequest(job.id)}
-          disabled={isPreviewLoading}
+          disabled={isPreviewLoading || isReviewBusy}
         >
           {isPreviewLoading ? dashboardText.list.previewBusy : dashboardText.list.previewAction}
         </button>
+        {canReview ? (
+          <>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={() => onReject(job)}
+              disabled={isReviewBusy}
+            >
+              {isRejectLoading ? dashboardText.approval.rejectBusy : dashboardText.approval.rejectAction}
+            </button>
+            <button
+              type="button"
+              className={styles.approveButton}
+              onClick={() => onApprove(job)}
+              disabled={isReviewBusy}
+            >
+              {isApprovalLoading ? dashboardText.approval.approveBusy : dashboardText.approval.approveAction}
+            </button>
+          </>
+        ) : null}
       </div>
     </article>
   );

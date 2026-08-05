@@ -118,19 +118,39 @@
 
 .actions {
   margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.previewButton {
+.previewButton,
+.secondaryButton,
+.approveButton {
   border: none;
   border-radius: 14px;
   padding: 11px 16px;
-  background: #172033;
-  color: #f7f2e7;
   font: inherit;
   cursor: pointer;
 }
 
-.previewButton:disabled {
+.previewButton {
+  background: #172033;
+  color: #f7f2e7;
+}
+
+.secondaryButton {
+  background: #f0e8da;
+  color: #5b4633;
+}
+
+.approveButton {
+  background: #185834;
+  color: #f7fdf8;
+}
+
+.previewButton:disabled,
+.secondaryButton:disabled,
+.approveButton:disabled {
   opacity: 0.65;
   cursor: wait;
 }

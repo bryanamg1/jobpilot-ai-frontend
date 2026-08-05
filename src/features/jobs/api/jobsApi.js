@@ -16,3 +16,17 @@ export function createDraftPreview(jobId) {
     method: 'POST',
   });
 }
+
+export function approveJob(jobId, payload = {}) {
+  return fetchJson(`/jobs/${jobId}/approve`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function rejectJob(jobId, payload = {}) {
+  return fetchJson(`/jobs/${jobId}/reject`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}

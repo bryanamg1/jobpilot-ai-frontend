@@ -61,6 +61,18 @@ export const dashboardText = {
     previewAction: 'Previsualizar borrador',
     previewBusy: 'Generando borrador...',
   },
+  approval: {
+    title: 'Bandeja de aprobacion',
+    empty: 'No hay vacantes pendientes de revision humana.',
+    subtitle:
+      'Aprueba solo cuando la vacante siga siendo valida y los datos sensibles ya esten verificados por Bryan.',
+    approveAction: 'Aprobar',
+    approveBusy: 'Aprobando...',
+    rejectAction: 'Descartar',
+    rejectBusy: 'Descartando...',
+    defaultReasonApprove: 'Revision humana completada.',
+    defaultReasonReject: 'No continuar con esta vacante.',
+  },
   draft: {
     title: 'Previsualizacion del borrador',
     empty: 'Genera un borrador desde una vacante para revisar asunto, cuerpo y advertencias antes de Gmail.',
