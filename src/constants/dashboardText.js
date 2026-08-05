@@ -1,9 +1,9 @@
 export const dashboardText = {
   shell: {
     eyebrow: 'JobPilot AI',
-    title: 'Pipeline de postulaciones con revisión humana',
+    title: 'Pipeline de postulaciones con revision humana',
     subtitle:
-      'Carga una vacante manual, analiza compatibilidad con reglas deterministas y revisa qué datos necesitan aprobación antes de preparar un borrador.',
+      'Carga una vacante manual, analiza compatibilidad con reglas deterministas y revisa que datos necesitan aprobacion antes de preparar un borrador.',
     storageLabel: 'Modo de almacenamiento',
   },
   metrics: {
@@ -14,7 +14,7 @@ export const dashboardText = {
   form: {
     title: 'Nueva vacante manual',
     subtitle:
-      'Pega texto de una publicación, alerta o correo. El sistema extrae señales visibles y nunca inventa experiencia.',
+      'Pega texto de una publicacion, alerta o correo. El sistema extrae senales visibles y nunca inventa experiencia.',
     rawTextLabel: 'Texto de la vacante',
     rawTextPlaceholder:
       'Ejemplo: Backend Developer - Remote at Acme Labs...\nEmpresa: Acme Labs\nRequisito: Node.js, Express y MySQL...',
@@ -25,20 +25,37 @@ export const dashboardText = {
     success: 'Vacante analizada y guardada.',
   },
   profile: {
-    title: 'Perfil maestro actual',
+    title: 'Perfil maestro',
+    subtitle:
+      'Este perfil se guarda en MySQL y funciona como fuente maestra para matching y futuras postulaciones.',
+    saveIdle: 'Guardar perfil',
+    saveBusy: 'Guardando...',
+    saveSuccess: 'Perfil guardado.',
+    name: 'Nombre',
     targetRoles: 'Roles objetivo',
-    location: 'Ubicación',
-    english: 'Inglés confirmado',
+    location: 'Ubicacion',
+    english: 'Ingles confirmado',
     availability: 'Disponibilidad',
-    salary: 'Salario base',
+    salaryAmount: 'Salario base',
+    salaryCurrency: 'Moneda',
+    salaryPeriod: 'Periodo',
+    github: 'GitHub',
+    linkedin: 'LinkedIn',
+    email: 'Email principal',
+    modalities: 'Modalidades',
+    projects: 'Proyectos',
+    technologies: 'Tecnologias confirmadas',
+    knowledgeAreas: 'Conocimientos',
+    prohibitedClaims: 'Claims prohibidos',
+    listHint: 'Separa multiples valores con comas.',
   },
   list: {
     title: 'Vacantes recientes',
-    empty: 'Todavía no hay vacantes cargadas.',
+    empty: 'Todavia no hay vacantes cargadas.',
     matches: 'Coincidencias',
     gaps: 'Brechas',
     risks: 'Riesgos',
-    approvals: 'Requiere aprobación',
+    approvals: 'Requiere aprobacion',
     blocked: 'Bloqueos',
   },
 };

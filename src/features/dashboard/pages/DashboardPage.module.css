@@ -35,34 +35,6 @@
   align-content: start;
 }
 
-.profilePanel {
-  padding: 24px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(31, 36, 48, 0.08);
-}
-
-.profilePanel h2 {
-  margin: 0 0 16px;
-  font-size: 1.35rem;
-}
-
-.profileGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 150px) 1fr;
-  gap: 10px 14px;
-  margin: 0;
-}
-
-.profileGrid dt {
-  font-weight: 700;
-  color: #4e5665;
-}
-
-.profileGrid dd {
-  margin: 0;
-}
-
 .message {
   border-radius: 18px;
   padding: 18px;
@@ -89,10 +61,6 @@
 
 @media (max-width: 640px) {
   .metricGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .profileGrid {
     grid-template-columns: 1fr;
   }
 }

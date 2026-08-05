@@ -28,11 +28,24 @@ describe('App', () => {
           new Response(
             JSON.stringify({
               data: {
+                name: 'Bryan Marquez',
                 headlineTargets: ['Backend Developer'],
                 location: 'Buenos Aires, Argentina',
                 englishLevel: 'B1',
                 availability: 'Full time',
                 salaryExpectation: { currency: 'USD', amount: 1000, period: 'monthly' },
+                modalities: ['remote', 'hybrid'],
+                publicLinks: {
+                  github: 'https://github.com/bryanamg1',
+                  linkedin: 'https://www.linkedin.com/in/bryan-marquez-dev/',
+                },
+                contact: {
+                  email: 'bryanamg181@gmail.com',
+                },
+                projects: ['Social App'],
+                technologies: ['Node.js', 'React'],
+                knowledgeAreas: ['AI agents'],
+                prohibitedClaims: ['English C1'],
               },
             }),
           ),

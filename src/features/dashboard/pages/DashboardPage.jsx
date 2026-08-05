@@ -1,7 +1,8 @@
 import { dashboardText } from '../../../constants/dashboardText.js';
 import { AppShell } from '../../../shared/components/AppShell.jsx';
-import { ManualJobForm } from '../../jobs/components/ManualJobForm.jsx';
 import { JobOfferList } from '../../jobs/components/JobOfferList.jsx';
+import { ManualJobForm } from '../../jobs/components/ManualJobForm.jsx';
+import { ProfileEditor } from '../../profile/components/ProfileEditor.jsx';
 import { useProfileQuery } from '../../profile/hooks/useProfileQuery.js';
 import { useDashboardQuery } from '../hooks/useDashboardQuery.js';
 import styles from './DashboardPage.module.css';
@@ -32,7 +33,9 @@ export function DashboardPage() {
       <section className={styles.layout}>
         <div className={styles.left}>
           <ManualJobForm />
-          <ProfilePanel profile={profileQuery.data} />
+          {profileQuery.isLoading ? <PanelMessage message="Cargando perfil maestro..." /> : null}
+          {profileQuery.isError ? <PanelMessage message={profileQuery.error.message} tone="error" /> : null}
+          {profileQuery.data ? <ProfileEditor profile={profileQuery.data} /> : null}
         </div>
         <div className={styles.right}>
           {dashboardQuery.isLoading ? <PanelMessage message="Cargando vacantes..." /> : null}
@@ -50,37 +53,6 @@ function MetricCard({ label, value }) {
       <span>{label}</span>
       <strong>{value}</strong>
     </article>
-  );
-}
-
-function ProfilePanel({ profile }) {
-  if (!profile) {
-    return <PanelMessage message="Cargando perfil maestro..." />;
-  }
-
-  return (
-    <section className={styles.profilePanel}>
-      <h2>{dashboardText.profile.title}</h2>
-      <dl className={styles.profileGrid}>
-        <ProfileRow label={dashboardText.profile.targetRoles} value={profile.headlineTargets.join(', ')} />
-        <ProfileRow label={dashboardText.profile.location} value={profile.location} />
-        <ProfileRow label={dashboardText.profile.english} value={profile.englishLevel} />
-        <ProfileRow label={dashboardText.profile.availability} value={profile.availability} />
-        <ProfileRow
-          label={dashboardText.profile.salary}
-          value={`${profile.salaryExpectation.currency} ${profile.salaryExpectation.amount} / ${profile.salaryExpectation.period}`}
-        />
-      </dl>
-    </section>
-  );
-}
-
-function ProfileRow({ label, value }) {
-  return (
-    <>
-      <dt>{label}</dt>
-      <dd>{value}</dd>
-    </>
   );
 }
 
