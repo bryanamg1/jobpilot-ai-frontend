@@ -1,6 +1,8 @@
 export const statusMeta = {
   READY_TO_PREPARE: { label: 'Lista para preparar', tone: 'good' },
   AWAITING_APPROVAL: { label: 'En revision humana', tone: 'warn' },
+  APPROVED: { label: 'Aprobada manualmente', tone: 'good' },
+  REJECTED: { label: 'Descartada manualmente', tone: 'bad' },
   REJECTED_BY_RULES: { label: 'Bloqueada por reglas', tone: 'bad' },
   ANALYZED: { label: 'Analizada', tone: 'neutral' },
 };
