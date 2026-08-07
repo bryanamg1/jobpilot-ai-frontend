@@ -1,0 +1,27 @@
+.wrapper {
+  display: grid;
+  gap: 18px;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.header p {
+  margin: 8px 0 0;
+  color: #6d7381;
+}
+
+.list {
+  display: grid;
+  gap: 18px;
+}
+
+.empty {
+  padding: 28px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px dashed rgba(31, 36, 48, 0.16);
+  color: #6d7381;
+}

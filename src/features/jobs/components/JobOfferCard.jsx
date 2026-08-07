@@ -1,9 +1,28 @@
 import { dashboardText } from '../../../constants/dashboardText.js';
-import { recommendationMeta, statusMeta } from '../../../constants/statusMeta.js';
+import {
+  getLabel,
+  getMeta,
+  guardrailFieldMeta,
+  recommendationMeta,
+  statusMeta,
+} from '../../../constants/statusMeta.js';
 import styles from './JobOfferCard.module.css';
 
-export function JobOfferCard({ job }) {
-  const status = statusMeta[job.match.status] || statusMeta.ANALYZED;
+export function JobOfferCard({
+  job,
+  onPreviewRequest,
+  previewLoadingJobId,
+  onApprove,
+  onReject,
+  reviewPendingJobId,
+  reviewDecision,
+}) {
+  const status = getMeta(statusMeta, job.match.status, 'ANALYZED');
+  const isPreviewLoading = previewLoadingJobId === job.id;
+  const isApprovalLoading = reviewPendingJobId === job.id && reviewDecision === 'approve';
+  const isRejectLoading = reviewPendingJobId === job.id && reviewDecision === 'reject';
+  const isReviewBusy = isApprovalLoading || isRejectLoading;
+  const canReview = typeof onApprove === 'function' && typeof onReject === 'function';
 
   return (
     <article className={styles.card}>
@@ -14,14 +33,14 @@ export function JobOfferCard({ job }) {
         </div>
         <div className={styles.scoreBlock}>
           <strong>{job.match.score}</strong>
-          <span>{recommendationMeta[job.match.recommendation]}</span>
+          <span>{recommendationMeta[job.match.recommendation] ?? job.match.recommendation}</span>
         </div>
       </div>
 
       <div className={styles.metaRow}>
         <span className={`${styles.badge} ${styles[status.tone]}`}>{status.label}</span>
         <span>{job.source.label}</span>
-        <span>{job.source.originalUrl || 'Sin enlace'}</span>
+        <span>{job.source.originalUrl || dashboardText.common.noLink}</span>
       </div>
 
       <div className={styles.grid}>
@@ -30,7 +49,7 @@ export function JobOfferCard({ job }) {
         <InfoList title={dashboardText.list.risks} items={job.match.explanation.risks} tone="warn" />
         <InfoList
           title={dashboardText.list.approvals}
-          items={job.match.approvals.map((item) => `${item.field}: ${item.reason}`)}
+          items={job.match.approvals.map((item) => `${getLabel(guardrailFieldMeta, item.field, item.field)}: ${item.reason}`)}
           tone="neutral"
         />
       </div>
@@ -45,6 +64,37 @@ export function JobOfferCard({ job }) {
           </ul>
         </div>
       ) : null}
+
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.previewButton}
+          onClick={() => onPreviewRequest(job.id)}
+          disabled={isPreviewLoading || isReviewBusy}
+        >
+          {isPreviewLoading ? dashboardText.list.previewBusy : dashboardText.list.previewAction}
+        </button>
+        {canReview ? (
+          <>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={() => onReject(job)}
+              disabled={isReviewBusy}
+            >
+              {isRejectLoading ? dashboardText.approval.rejectBusy : dashboardText.approval.rejectAction}
+            </button>
+            <button
+              type="button"
+              className={styles.approveButton}
+              onClick={() => onApprove(job)}
+              disabled={isReviewBusy}
+            >
+              {isApprovalLoading ? dashboardText.approval.approveBusy : dashboardText.approval.approveAction}
+            </button>
+          </>
+        ) : null}
+      </div>
     </article>
   );
 }
@@ -60,7 +110,7 @@ function InfoList({ title, items, tone }) {
           ))}
         </ul>
       ) : (
-        <p className={styles.empty}>Sin novedades.</p>
+        <p className={styles.empty}>{dashboardText.common.noNews}</p>
       )}
     </section>
   );

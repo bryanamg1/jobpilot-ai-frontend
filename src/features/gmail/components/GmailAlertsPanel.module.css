@@ -1,0 +1,38 @@
+.panel {
+  background: #fffdfa;
+  border-radius: 24px;
+  padding: 22px;
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
+}
+
+.error {
+  color: #8c2438;
+}
+
+.list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+
+.item {
+  background: #f5f0e5;
+  border-radius: 18px;
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.item span,
+.item p {
+  color: #5c6473;
+  margin: 0;
+}
+
+.empty {
+  margin: 12px 0 0;
+  color: #707888;
+}

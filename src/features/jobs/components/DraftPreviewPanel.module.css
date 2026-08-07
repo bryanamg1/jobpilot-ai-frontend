@@ -1,0 +1,153 @@
+.panel {
+  background: linear-gradient(180deg, rgba(255, 253, 250, 0.98), rgba(246, 240, 229, 0.96));
+  border-radius: 24px;
+  padding: 22px;
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
+  display: grid;
+  gap: 16px;
+}
+
+.error {
+  color: #8c2438;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+}
+
+.header h2 {
+  margin: 6px 0 0;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #7a6047;
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.good {
+  background: #d9f5e5;
+  color: #185834;
+}
+
+.warn {
+  background: #fff1c9;
+  color: #876100;
+}
+
+.bad {
+  background: #ffd7dc;
+  color: #8c2438;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.infoBlock,
+.section {
+  background: rgba(255, 255, 255, 0.74);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.infoBlock span,
+.section h3 {
+  display: block;
+  margin: 0 0 8px;
+  color: #5c6473;
+}
+
+.infoBlock strong {
+  word-break: break-word;
+}
+
+.body {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+.actions {
+  display: grid;
+  gap: 10px;
+}
+
+.primaryButton {
+  border: none;
+  border-radius: 14px;
+  padding: 11px 16px;
+  background: #172033;
+  color: #f7f2e7;
+  font: inherit;
+  cursor: pointer;
+}
+
+.primaryButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.helper {
+  margin: 0;
+  color: #5c6473;
+}
+
+.suggestionList {
+  display: grid;
+  gap: 12px;
+}
+
+.suggestionCard {
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  display: grid;
+  gap: 8px;
+}
+
+.suggestionHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.list,
+.factList {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.empty {
+  margin: 0;
+  color: #707888;
+}
+
+@media (max-width: 760px) {
+  .metaGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,130 @@
+.card {
+  background: rgba(255, 253, 250, 0.96);
+  border-radius: 24px;
+  padding: 22px;
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
+  display: grid;
+  gap: 18px;
+}
+
+.header h2,
+.group h3 {
+  margin: 0;
+}
+
+.header p,
+.message,
+.note {
+  margin: 8px 0 0;
+  color: #5c6473;
+}
+
+.group,
+.list,
+.filters,
+.field {
+  display: grid;
+  gap: 12px;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field span {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid #d9d3c6;
+  border-radius: 14px;
+  padding: 10px 12px;
+  font: inherit;
+  background: #fffdfa;
+}
+
+.approvalCard {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 18px;
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.meta span {
+  color: #5c6473;
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.good {
+  background: #d9f5e5;
+  color: #185834;
+}
+
+.warn {
+  background: #fff1c9;
+  color: #876100;
+}
+
+.bad {
+  background: #ffd7dc;
+  color: #8c2438;
+}
+
+.reason,
+.error {
+  margin: 0;
+  color: #1f2430;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.actions button {
+  border: none;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font: inherit;
+  cursor: pointer;
+  background: #172033;
+  color: #f7f2e7;
+}
+
+.actions button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.secondaryButton {
+  background: #f3eee2 !important;
+  color: #5b4633 !important;
+}
+
+@media (max-width: 900px) {
+  .filterGrid {
+    grid-template-columns: 1fr;
+  }
+}
