@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+﻿import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@testing-library/jest-dom/vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -17,6 +17,33 @@ describe('App', () => {
                 data: {
                   storageMode: 'memory',
                   metrics: { total: 1, readyToPrepare: 0, awaitingApproval: 1, blocked: 0 },
+                  automation: {
+                    settings: {
+                      enabled: false,
+                      mode: 'DRY_RUN',
+                      timezone: 'America/Argentina/Buenos_Aires',
+                      dailyApplicationLimit: 5,
+                      dailyDiscoveryLimit: 25,
+                      minimumMatchScore: 75,
+                      requireHumanApproval: true,
+                      startTime: '09:00',
+                      filters: {
+                        allowedSources: ['LINKEDIN_JOBS_SUPERVISED'],
+                        allowedRoles: [],
+                        blockedCompanies: [],
+                        blockedKeywords: [],
+                      },
+                      sourcePolicies: {
+                        MANUAL: 'MANUAL_ONLY',
+                        LINKEDIN_JOBS_SUPERVISED: 'AUTO_PREPARE',
+                        LINKEDIN_FEED_SUPERVISED: 'AUTO_PREPARE',
+                        LINKEDIN_POST_SEARCH_SUPERVISED: 'AUTO_PREPARE',
+                      },
+                    },
+                    dailyCompleted: 0,
+                  },
+                  applications: [],
+                  agentRuns: [],
                   latest: [
                     {
                       id: 'job-1',
@@ -36,8 +63,8 @@ describe('App', () => {
                         excludedByRules: [],
                         explanation: {
                           matches: ['Node.js'],
-                          gaps: ['English B2'],
-                          risks: ['Salary expectation pending'],
+                          gaps: ['El requisito de ingles avanzado supera el nivel B1 confirmado.'],
+                          risks: ['El salario es un dato sensible y requiere aprobacion manual.'],
                         },
                       },
                     },
@@ -101,12 +128,25 @@ describe('App', () => {
                       excludedByRules: [],
                       explanation: {
                         matches: ['Node.js'],
-                        gaps: ['English B2'],
-                        risks: ['Salary expectation pending'],
+                        gaps: ['El requisito de ingles avanzado supera el nivel B1 confirmado.'],
+                        risks: ['El salario es un dato sensible y requiere aprobacion manual.'],
                       },
                     },
                   },
                 ],
+              }),
+            ),
+          );
+        }
+
+        if (String(url).includes('/automation/runs')) {
+          return Promise.resolve(
+            new Response(
+              JSON.stringify({
+                data: {
+                  id: 'run-1',
+                  status: 'COMPLETED',
+                },
               }),
             ),
           );
@@ -171,7 +211,7 @@ describe('App', () => {
                   connected: false,
                   emailAddress: null,
                   labelName: 'Postulaciones/Por revisar',
-                  draftLabelNote: 'Draft labels are limited in Gmail.',
+                  draftLabelNote: 'Los borradores de Gmail solo admiten la etiqueta predeterminada DRAFT. La etiqueta de revision se conserva para seguimiento interno y futuras automatizaciones.',
                   alertQuery: 'job alert',
                 },
               }),
@@ -244,3 +284,4 @@ describe('App', () => {
     });
   });
 });
+

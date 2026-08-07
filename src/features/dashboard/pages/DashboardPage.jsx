@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import { ApplicationRunsPanel } from '../../applications/components/ApplicationRunsPanel.jsx';
+import { AutomationControlPanel } from '../../automation/components/AutomationControlPanel.jsx';
+import { useTriggerAutomationRun } from '../../automation/hooks/useTriggerAutomationRun.js';
+import { useUpdateAutomationSettings } from '../../automation/hooks/useUpdateAutomationSettings.js';
 import { AnswerLibraryPanel } from '../../answers/components/AnswerLibraryPanel.jsx';
 import { SensitiveApprovalPanel } from '../../approvals/components/SensitiveApprovalPanel.jsx';
 import { useApprovalsQuery } from '../../approvals/hooks/useApprovalsQuery.js';
@@ -16,6 +20,14 @@ import {
 import { useBrowserSessionMutation } from '../../browserSessions/hooks/useBrowserSessionMutation.js';
 import { useBrowserSessionsQuery } from '../../browserSessions/hooks/useBrowserSessionsQuery.js';
 import { dashboardText } from '../../../constants/dashboardText.js';
+import {
+  circuitStateMeta,
+  getLabel,
+  healthStatusMeta,
+  integrationStatusMeta,
+  queueModeMeta,
+  storageModeMeta,
+} from '../../../constants/statusMeta.js';
 import { AppShell } from '../../../shared/components/AppShell.jsx';
 import { GmailAlertsPanel } from '../../gmail/components/GmailAlertsPanel.jsx';
 import { GmailIntegrationPanel } from '../../gmail/components/GmailIntegrationPanel.jsx';
@@ -30,6 +42,7 @@ import { JobOfferList } from '../../jobs/components/JobOfferList.jsx';
 import { ManualJobForm } from '../../jobs/components/ManualJobForm.jsx';
 import { useCreateDraftPreview } from '../../jobs/hooks/useCreateDraftPreview.js';
 import { useJobsQuery } from '../../jobs/hooks/useJobsQuery.js';
+import { useRunJobDryRun } from '../../jobs/hooks/useRunJobDryRun.js';
 import { useReviewJobDecision } from '../../jobs/hooks/useReviewJobDecision.js';
 import { ProfileEditor } from '../../profile/components/ProfileEditor.jsx';
 import { useProfileQuery } from '../../profile/hooks/useProfileQuery.js';
@@ -83,6 +96,9 @@ export function DashboardPage() {
   const connectGmailMutation = useConnectGmail();
   const disconnectGmailMutation = useDisconnectGmail();
   const createGmailDraftMutation = useCreateGmailDraft();
+  const updateAutomationSettingsMutation = useUpdateAutomationSettings();
+  const triggerAutomationRunMutation = useTriggerAutomationRun();
+  const runJobDryRunMutation = useRunJobDryRun();
 
   const summary = dashboardQuery.data || {
     storageMode: 'memory',
@@ -93,6 +109,9 @@ export function DashboardPage() {
   const resumes = resumesQuery.data || [];
   const approvals = approvalsQuery.data || [];
   const browserSessions = browserSessionsQuery.data || [];
+  const automationSettings = summary.automation?.settings ?? null;
+  const recentApplications = summary.applications ?? [];
+  const recentAgentRuns = summary.agentRuns ?? [];
   const approvalJobs = jobs.filter((job) => job.match.status === 'AWAITING_APPROVAL');
   const selectedPreviewJob = jobs.find((job) => job.id === selectedPreviewJobId) ?? null;
 
@@ -268,12 +287,24 @@ export function DashboardPage() {
         <MetricCard label={dashboardText.metrics.ready} value={summary.metrics.readyToPrepare} />
         <MetricCard label={dashboardText.metrics.awaitingApproval} value={summary.metrics.awaitingApproval} />
         <MetricCard label={dashboardText.metrics.blocked} value={summary.metrics.blocked} />
-        <MetricCard label={dashboardText.shell.storageLabel} value={summary.storageMode} />
+        <MetricCard label={dashboardText.shell.storageLabel} value={getLabel(storageModeMeta, summary.storageMode, summary.storageMode)} />
       </section>
 
       <section className={styles.layout}>
         <div className={styles.left}>
           <ManualJobForm />
+          <AutomationControlPanel
+            key={automationSettings?.updatedAt ?? automationSettings?.version ?? 'automation-settings'}
+            settings={automationSettings}
+            onSave={(payload) => updateAutomationSettingsMutation.mutate(payload)}
+            isSaving={updateAutomationSettingsMutation.isPending}
+            saveError={updateAutomationSettingsMutation.error}
+            saveSuccess={updateAutomationSettingsMutation.isSuccess}
+            onTriggerRun={() => triggerAutomationRunMutation.mutate({ reason: dashboardText.common.dashboardManualTrigger })}
+            isTriggering={triggerAutomationRunMutation.isPending}
+            triggerError={triggerAutomationRunMutation.error}
+            triggerResult={triggerAutomationRunMutation.data?.data ?? null}
+          />
           <BrowserSessionsPanel
             sessions={browserSessions}
             isLoading={browserSessionsQuery.isLoading}
@@ -300,7 +331,7 @@ export function DashboardPage() {
             error={gmailAlertsQuery.error}
             isConnected={Boolean(gmailStatusQuery.data?.connected)}
           />
-          {profileQuery.isLoading ? <PanelMessage message="Cargando perfil maestro..." /> : null}
+          {profileQuery.isLoading ? <PanelMessage message={dashboardText.common.loadingProfile} /> : null}
           {profileQuery.isError ? <PanelMessage message={profileQuery.error.message} tone="error" /> : null}
           {profileQuery.data ? <ProfileEditor profile={profileQuery.data} /> : null}
           <ResumeManagerPanel
@@ -345,10 +376,15 @@ export function DashboardPage() {
             error={draftPreviewMutation.error}
             gmailStatus={gmailStatusQuery.data}
             onCreateGmailDraft={(jobId) => createGmailDraftMutation.mutate(jobId)}
+            onRunDryRun={(jobId) => runJobDryRunMutation.mutate(jobId)}
             isCreatingGmailDraft={createGmailDraftMutation.isPending}
+            isRunningDryRun={runJobDryRunMutation.isPending}
             gmailDraftResult={createGmailDraftMutation.data?.data ?? null}
             gmailDraftError={createGmailDraftMutation.error}
+            dryRunResult={runJobDryRunMutation.data?.data ?? null}
+            dryRunError={runJobDryRunMutation.error}
           />
+          <ApplicationRunsPanel applications={recentApplications} agentRuns={recentAgentRuns} />
           <OperationsPanel
             health={healthQuery.data ?? null}
             isLoading={healthQuery.isLoading}
@@ -367,7 +403,16 @@ export function DashboardPage() {
           {resolveSensitiveApprovalMutation.isError ? (
             <PanelMessage message={resolveSensitiveApprovalMutation.error.message} tone="error" />
           ) : null}
-          {jobsQuery.isLoading ? <PanelMessage message="Cargando bandeja de aprobacion..." /> : null}
+          {updateAutomationSettingsMutation.isError ? (
+            <PanelMessage message={updateAutomationSettingsMutation.error.message} tone="error" />
+          ) : null}
+          {triggerAutomationRunMutation.isError ? (
+            <PanelMessage message={triggerAutomationRunMutation.error.message} tone="error" />
+          ) : null}
+          {runJobDryRunMutation.isError ? (
+            <PanelMessage message={runJobDryRunMutation.error.message} tone="error" />
+          ) : null}
+          {jobsQuery.isLoading ? <PanelMessage message={dashboardText.common.loadingApprovalQueue} /> : null}
           {jobsQuery.isError ? <PanelMessage message={jobsQuery.error.message} tone="error" /> : null}
           {!jobsQuery.isLoading && !jobsQuery.isError ? (
             <ApprovalQueuePanel
@@ -380,7 +425,7 @@ export function DashboardPage() {
               reviewDecision={reviewDecisionMutation.isPending ? reviewState.decision : null}
             />
           ) : null}
-          {dashboardQuery.isLoading ? <PanelMessage message="Cargando vacantes..." /> : null}
+          {dashboardQuery.isLoading ? <PanelMessage message={dashboardText.common.loadingJobs} /> : null}
           {dashboardQuery.isError ? <PanelMessage message={dashboardQuery.error.message} tone="error" /> : null}
           {!dashboardQuery.isLoading && !dashboardQuery.isError ? (
             <JobOfferList
@@ -412,7 +457,7 @@ function OperationsPanel({ health, isLoading, error }) {
   const text = dashboardText.operations;
 
   if (isLoading) {
-    return <PanelMessage message="Cargando estado operativo..." />;
+    return <PanelMessage message={dashboardText.common.loadingOperations} />;
   }
 
   if (error) {
@@ -435,35 +480,35 @@ function OperationsPanel({ health, isLoading, error }) {
       <div className={styles.operationsGrid}>
         <article className={styles.operationsCard}>
           <span>{text.overallStatus}</span>
-          <strong>{health.status}</strong>
+          <strong>{getLabel(healthStatusMeta, health.status, health.status ?? dashboardText.common.notAvailable)}</strong>
         </article>
         <article className={styles.operationsCard}>
           <span>{text.storageMode}</span>
-          <strong>{health.storageMode}</strong>
+          <strong>{getLabel(storageModeMeta, health.storageMode, health.storageMode ?? dashboardText.common.notAvailable)}</strong>
         </article>
         <article className={styles.operationsCard}>
           <span>{text.queueMode}</span>
-          <strong>{health.dependencies?.queue?.mode ?? 'n/a'}</strong>
+          <strong>{getLabel(queueModeMeta, health.dependencies?.queue?.mode, dashboardText.common.notAvailable)}</strong>
         </article>
         <article className={styles.operationsCard}>
           <span>{text.queueStatus}</span>
-          <strong>{health.dependencies?.queue?.status ?? 'n/a'}</strong>
+          <strong>{getLabel(healthStatusMeta, health.dependencies?.queue?.status, dashboardText.common.notAvailable)}</strong>
         </article>
         <article className={styles.operationsCard}>
           <span>{text.gmailStatus}</span>
-          <strong>{health.integrations?.gmail?.status ?? 'n/a'}</strong>
+          <strong>{getLabel(integrationStatusMeta, health.integrations?.gmail?.status, dashboardText.common.notAvailable)}</strong>
         </article>
         <article className={styles.operationsCard}>
           <span>{text.openAiStatus}</span>
-          <strong>{health.integrations?.openai?.status ?? 'n/a'}</strong>
+          <strong>{getLabel(integrationStatusMeta, health.integrations?.openai?.status, dashboardText.common.notAvailable)}</strong>
         </article>
         <article className={styles.operationsCard}>
           <span>{text.redisConfigured}</span>
-          <strong>{health.runtime?.redisConfigured ? 'si' : 'no'}</strong>
+          <strong>{health.runtime?.redisConfigured ? dashboardText.common.yes : dashboardText.common.no}</strong>
         </article>
         <article className={styles.operationsCard}>
           <span>{text.requestCorrelation}</span>
-          <strong>{health.runtime?.requestCorrelation ? 'activa' : 'inactiva'}</strong>
+          <strong>{health.runtime?.requestCorrelation ? dashboardText.common.active : dashboardText.common.inactive}</strong>
         </article>
       </div>
 
@@ -472,7 +517,7 @@ function OperationsPanel({ health, isLoading, error }) {
         <ul className={styles.operationsCircuitList}>
           {circuitEntries.map(([name, circuit]) => (
             <li key={name}>
-              <strong>{name}</strong>: {circuit.state}
+              <strong>{name}</strong>: {getLabel(circuitStateMeta, circuit.state, circuit.state)}
             </li>
           ))}
         </ul>

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+﻿import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError, fetchJson } from './fetchJson.js';
 
 describe('fetchJson', () => {
@@ -33,7 +33,7 @@ describe('fetchJson', () => {
         JSON.stringify({
           success: false,
           code: 'VALIDATION_ERROR',
-          message: 'Los datos enviados no son válidos.',
+          message: 'Los datos enviados no son vÃ¡lidos.',
           errors: [
             { field: 'question', message: 'La pregunta es obligatoria.' },
             { field: 'answer', message: 'La respuesta es obligatoria.' },
@@ -59,7 +59,7 @@ describe('fetchJson', () => {
     globalThis.fetch.mockResolvedValue(
       new Response(
         JSON.stringify({
-          message: 'Unexpected server error',
+          message: 'Ocurrio un error inesperado en el servidor.',
         }),
         { status: 500 },
       ),
@@ -69,7 +69,7 @@ describe('fetchJson', () => {
       expect.objectContaining({
         name: 'ApiError',
         status: 500,
-        message: 'Unexpected server error',
+        message: 'Ocurrio un error inesperado en el servidor.',
       }),
     );
   });
@@ -88,7 +88,7 @@ describe('fetchJson', () => {
       expect.objectContaining({
         name: 'ApiError',
         status: 502,
-        message: 'Request failed',
+        message: 'La solicitud no pudo completarse.',
       }),
     );
   });
@@ -97,3 +97,4 @@ describe('fetchJson', () => {
     expect(new ApiError({ message: 'boom' }, 500)).toBeInstanceOf(Error);
   });
 });
+

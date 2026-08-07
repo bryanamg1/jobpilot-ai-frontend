@@ -43,7 +43,7 @@ function buildErrorMessage(payload) {
     return fieldErrors.join(' ');
   }
 
-  return payload?.message || 'Request failed';
+  return payload?.message || 'La solicitud no pudo completarse.';
 }
 
 function collectFieldMessages(payload) {

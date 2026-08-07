@@ -1,0 +1,48 @@
+.card {
+  border-radius: 22px;
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
+  display: grid;
+  gap: 18px;
+}
+
+.header,
+.section,
+.list {
+  display: grid;
+  gap: 12px;
+}
+
+.header h2,
+.section h3 {
+  margin: 0;
+}
+
+.header p,
+.item p {
+  margin: 0;
+  color: #5c6473;
+}
+
+.item {
+  border-radius: 16px;
+  padding: 14px;
+  background: #fffdfa;
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  display: grid;
+  gap: 6px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.empty {
+  margin: 0;
+  color: #5c6473;
+}
+
