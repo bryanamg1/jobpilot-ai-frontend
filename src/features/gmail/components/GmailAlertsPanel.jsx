@@ -3,9 +3,10 @@ import styles from './GmailAlertsPanel.module.css';
 
 export function GmailAlertsPanel({ alerts, isLoading, error, isConnected }) {
   const gmailText = dashboardText.gmail;
+  const commonText = dashboardText.common;
 
   if (!isConnected) {
-    return <section className={styles.panel}>{dashboardText.draft.gmailDraftConnectHint}</section>;
+    return <section className={styles.panel}>{gmailText.alertsConnectHint}</section>;
   }
 
   if (isLoading) {
@@ -23,9 +24,9 @@ export function GmailAlertsPanel({ alerts, isLoading, error, isConnected }) {
         <ul className={styles.list}>
           {alerts.messages.map((message) => (
             <li key={message.id} className={styles.item}>
-              <strong>{message.subject || 'Sin asunto'}</strong>
-              <span>{message.from || 'Sin remitente'}</span>
-              <p>{message.snippet || 'Sin preview'}</p>
+              <strong>{message.subject || commonText.noSubject}</strong>
+              <span>{message.from || commonText.noSender}</span>
+              <p>{message.snippet || commonText.noSnippet}</p>
             </li>
           ))}
         </ul>

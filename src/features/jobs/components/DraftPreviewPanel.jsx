@@ -1,4 +1,18 @@
 import { dashboardText } from '../../../constants/dashboardText.js';
+import {
+  answerKindMeta,
+  applicationResultMeta,
+  applicationStatusMeta,
+  approvalKindMeta,
+  approvalStatusMeta,
+  certaintyMeta,
+  factFieldMeta,
+  getLabel,
+  getMeta,
+  mapCertaintyToUsageStatus,
+  previewStatusMeta,
+  usageStatusMeta,
+} from '../../../constants/statusMeta.js';
 import styles from './DraftPreviewPanel.module.css';
 
 export function DraftPreviewPanel({
@@ -7,9 +21,13 @@ export function DraftPreviewPanel({
   error,
   gmailStatus,
   onCreateGmailDraft,
+  onRunDryRun,
   isCreatingGmailDraft,
+  isRunningDryRun,
   gmailDraftResult,
   gmailDraftError,
+  dryRunResult,
+  dryRunError,
 }) {
   const draftText = dashboardText.draft;
 
@@ -32,11 +50,13 @@ export function DraftPreviewPanel({
           <p className={styles.eyebrow}>{preview.company}</p>
           <h2>{draftText.title}</h2>
         </div>
-        <span className={`${styles.badge} ${styles[mapTone(preview.status)]}`}>{mapStatus(preview.status)}</span>
+        <span className={`${styles.badge} ${styles[getMeta(previewStatusMeta, preview.status, 'BLOCKED').tone]}`}>
+          {getMeta(previewStatusMeta, preview.status, 'BLOCKED').label}
+        </span>
       </div>
 
       <div className={styles.metaGrid}>
-        <InfoBlock label={draftText.recipient} value={preview.recipient || 'No visible'} />
+        <InfoBlock label={draftText.recipient} value={preview.recipient || dashboardText.common.noVisible} />
         <InfoBlock label={draftText.subject} value={preview.subject || draftText.blocked} />
         <InfoBlock
           label={draftText.selectedResume}
@@ -57,6 +77,14 @@ export function DraftPreviewPanel({
         <button
           type="button"
           className={styles.primaryButton}
+          onClick={() => onRunDryRun(preview.jobId)}
+          disabled={isRunningDryRun || preview.status === 'BLOCKED'}
+        >
+          {isRunningDryRun ? draftText.dryRunBusy : draftText.dryRunIdle}
+        </button>
+        <button
+          type="button"
+          className={styles.primaryButton}
           onClick={() => onCreateGmailDraft(preview.jobId)}
           disabled={
             isCreatingGmailDraft ||
@@ -69,6 +97,22 @@ export function DraftPreviewPanel({
         </button>
         {!gmailStatus?.connected ? <p className={styles.helper}>{draftText.gmailDraftConnectHint}</p> : null}
       </div>
+
+      {dryRunResult ? (
+        <section className={styles.section}>
+          <h3>{draftText.dryRunSuccess}</h3>
+          <p className={styles.empty}>
+            {`${getMeta(applicationStatusMeta, dryRunResult.status).label} - ${getLabel(applicationResultMeta, dryRunResult.metadata?.result, dashboardText.common.notAvailable)}`}
+          </p>
+        </section>
+      ) : null}
+
+      {dryRunError ? (
+        <section className={`${styles.section} ${styles.error}`}>
+          <h3>{draftText.warnings}</h3>
+          <p className={styles.empty}>{dryRunError.message}</p>
+        </section>
+      ) : null}
 
       {gmailDraftResult ? (
         <section className={styles.section}>
@@ -103,17 +147,17 @@ export function DraftPreviewPanel({
       <FactSection
         title={draftText.approvals}
         items={preview.approvalsRequired}
-        emptyLabel="Sin aprobaciones pendientes."
+        emptyLabel={dashboardText.common.noPendingApprovals}
       />
       <FactSection
         title={draftText.blocked}
         items={preview.blockedReasons}
-        emptyLabel="Sin bloqueos activos."
+        emptyLabel={dashboardText.common.noActiveBlocks}
       />
       <FactSection
         title={draftText.warnings}
         items={preview.generation.warnings}
-        emptyLabel="Sin advertencias nuevas."
+        emptyLabel={dashboardText.common.noNewWarnings}
       />
 
       <section className={styles.section}>
@@ -124,15 +168,17 @@ export function DraftPreviewPanel({
               <article key={item.id} className={styles.suggestionCard}>
                 <div className={styles.suggestionHeader}>
                   <strong>{item.question}</strong>
-                  <span className={`${styles.badge} ${styles[mapSuggestionTone(item.usageStatus)]}`}>
-                    {item.usageStatus}
+                  <span className={`${styles.badge} ${styles[getMeta(usageStatusMeta, item.usageStatus ?? mapCertaintyToUsageStatus(item.certainty)).tone]}`}>
+                    {getMeta(usageStatusMeta, item.usageStatus ?? mapCertaintyToUsageStatus(item.certainty)).label}
                   </span>
                 </div>
                 <p className={styles.empty}>{item.answer}</p>
-                <p className={styles.helper}>{`${item.kind} - ${item.certainty} - ${item.matchReason}`}</p>
+                <p className={styles.helper}>
+                  {`${getLabel(answerKindMeta, item.kind, item.kind)} - ${getLabel(certaintyMeta, item.certainty, item.certainty)} - ${item.matchReason}`}
+                </p>
                 {item.approvalStatus ? (
                   <p className={styles.helper}>
-                    {draftText.sensitiveApprovals}: {item.approvalStatus}
+                    {draftText.sensitiveApprovals}: {getMeta(approvalStatusMeta, item.approvalStatus).label}
                   </p>
                 ) : null}
               </article>
@@ -150,13 +196,13 @@ export function DraftPreviewPanel({
             {preview.approvalRequests.map((item) => (
               <article key={item.id} className={styles.suggestionCard}>
                 <div className={styles.suggestionHeader}>
-                  <strong>{item.approvalKind}</strong>
-                  <span className={`${styles.badge} ${styles[mapApprovalTone(item.status)]}`}>
-                    {item.status}
+                  <strong>{getLabel(approvalKindMeta, item.approvalKind, item.approvalKind)}</strong>
+                  <span className={`${styles.badge} ${styles[getMeta(approvalStatusMeta, item.status).tone]}`}>
+                    {getMeta(approvalStatusMeta, item.status).label}
                   </span>
                 </div>
                 <p className={styles.empty}>{item.payload.reason}</p>
-                {item.payload.note ? <p className={styles.helper}>Nota: {item.payload.note}</p> : null}
+                {item.payload.note ? <p className={styles.helper}>{`${dashboardText.common.noteLabel}: ${item.payload.note}`}</p> : null}
               </article>
             ))}
           </div>
@@ -171,12 +217,12 @@ export function DraftPreviewPanel({
           <ul className={styles.factList}>
             {preview.factsUsed.map((fact) => (
               <li key={`${fact.field}-${fact.value}-${fact.source}`}>
-                <strong>{fact.field}</strong>: {fact.value} ({fact.certainty})
+                <strong>{getLabel(factFieldMeta, fact.field, fact.field)}</strong>: {fact.value} ({getLabel(certaintyMeta, fact.certainty, fact.certainty)})
               </li>
             ))}
           </ul>
         ) : (
-          <p className={styles.empty}>Sin hechos disponibles.</p>
+          <p className={styles.empty}>{dashboardText.common.noFacts}</p>
         )}
       </section>
     </section>
@@ -209,42 +255,3 @@ function FactSection({ title, items, emptyLabel = 'Sin novedades.' }) {
   );
 }
 
-function mapStatus(status) {
-  if (status === 'READY') {
-    return dashboardText.draft.statusReady;
-  }
-  if (status === 'REVIEW_REQUIRED') {
-    return dashboardText.draft.statusReview;
-  }
-  return dashboardText.draft.statusBlocked;
-}
-
-function mapTone(status) {
-  if (status === 'READY') {
-    return 'good';
-  }
-  if (status === 'REVIEW_REQUIRED') {
-    return 'warn';
-  }
-  return 'bad';
-}
-
-function mapSuggestionTone(usageStatus) {
-  if (usageStatus === 'REFERENCE_ONLY') {
-    return 'good';
-  }
-  if (usageStatus === 'REVIEW_REQUIRED') {
-    return 'warn';
-  }
-  return 'bad';
-}
-
-function mapApprovalTone(status) {
-  if (status === 'APPROVED') {
-    return 'good';
-  }
-  if (status === 'REJECTED') {
-    return 'bad';
-  }
-  return 'warn';
-}

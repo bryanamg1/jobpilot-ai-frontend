@@ -1,15 +1,14 @@
 import { useMemo, useState } from 'react';
 import { dashboardText } from '../../../constants/dashboardText.js';
+import {
+  approvalKindMeta,
+  approvalKindOptions,
+  approvalStatusMeta,
+  approvalStatusOptions,
+  getLabel,
+  getMeta,
+} from '../../../constants/statusMeta.js';
 import styles from './SensitiveApprovalPanel.module.css';
-
-const approvalKinds = [
-  'salaryExpectation',
-  'englishLevel',
-  'availability',
-  'workAuthorization',
-  'relocation',
-  'travel',
-];
 
 export function SensitiveApprovalPanel({
   approvals,
@@ -48,9 +47,11 @@ export function SensitiveApprovalPanel({
             <span>{text.statusLabel}</span>
             <select value={filters.status} onChange={(event) => onFiltersChange({ status: event.target.value })}>
               <option value="">{text.allStatuses}</option>
-              <option value="PENDING">PENDING</option>
-              <option value="APPROVED">APPROVED</option>
-              <option value="REJECTED">REJECTED</option>
+              {approvalStatusOptions.map((item) => (
+                <option key={item} value={item}>
+                  {getMeta(approvalStatusMeta, item).label}
+                </option>
+              ))}
             </select>
           </label>
           <label className={styles.field}>
@@ -60,9 +61,9 @@ export function SensitiveApprovalPanel({
               onChange={(event) => onFiltersChange({ approvalKind: event.target.value })}
             >
               <option value="">{text.allKinds}</option>
-              {approvalKinds.map((item) => (
+              {approvalKindOptions.map((item) => (
                 <option key={item} value={item}>
-                  {item}
+                  {getLabel(approvalKindMeta, item, item)}
                 </option>
               ))}
             </select>
@@ -70,7 +71,7 @@ export function SensitiveApprovalPanel({
         </div>
       </div>
 
-      {isLoading ? <p className={styles.message}>Cargando aprobaciones...</p> : null}
+      {isLoading ? <p className={styles.message}>{dashboardText.common.loadingApprovals}</p> : null}
       {error ? <p className={styles.error}>{error.message}</p> : null}
 
       {!isLoading && !error ? (
@@ -137,12 +138,14 @@ function ApprovalGroup({
                 <div className={styles.meta}>
                   <strong>{item.payload.jobTitle}</strong>
                   <span>{item.payload.company}</span>
-                  <span>{item.approvalKind}</span>
-                  <span className={`${styles.badge} ${styles[mapTone(item.status)]}`}>{item.status}</span>
+                  <span>{getLabel(approvalKindMeta, item.approvalKind, item.approvalKind)}</span>
+                  <span className={`${styles.badge} ${styles[getMeta(approvalStatusMeta, item.status).tone]}`}>
+                    {getMeta(approvalStatusMeta, item.status).label}
+                  </span>
                 </div>
                 <p className={styles.reason}>{item.payload.reason}</p>
                 {readOnly ? (
-                  item.payload.note ? <p className={styles.note}>Nota: {item.payload.note}</p> : null
+                  item.payload.note ? <p className={styles.note}>{`${dashboardText.common.noteLabel}: ${item.payload.note}`}</p> : null
                 ) : (
                   <label className={styles.field}>
                     <span>{text.reviewerNoteLabel}</span>
@@ -178,14 +181,4 @@ function ApprovalGroup({
       )}
     </section>
   );
-}
-
-function mapTone(status) {
-  if (status === 'APPROVED') {
-    return 'good';
-  }
-  if (status === 'REJECTED') {
-    return 'bad';
-  }
-  return 'warn';
 }

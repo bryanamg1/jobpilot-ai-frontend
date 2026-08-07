@@ -17,6 +17,12 @@ export function createDraftPreview(jobId) {
   });
 }
 
+export function createJobDryRunApplication(jobId) {
+  return fetchJson(`/jobs/${jobId}/dry-run-application`, {
+    method: 'POST',
+  });
+}
+
 export function approveJob(jobId, payload = {}) {
   return fetchJson(`/jobs/${jobId}/approve`, {
     method: 'POST',

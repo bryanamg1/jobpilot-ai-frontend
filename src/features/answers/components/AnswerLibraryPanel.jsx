@@ -1,31 +1,21 @@
 import { useState } from 'react';
 import { dashboardText } from '../../../constants/dashboardText.js';
+import {
+  answerKindMeta,
+  answerKindOptions,
+  certaintyMeta,
+  certaintyOptions,
+  getLabel,
+  getMeta,
+  mapCertaintyToUsageStatus,
+  usageStatusMeta,
+} from '../../../constants/statusMeta.js';
 import { getApiValidationMessages } from '../../../shared/lib/apiValidation.js';
 import { useAnswersQuery } from '../hooks/useAnswersQuery.js';
 import { useCreateAnswer } from '../hooks/useCreateAnswer.js';
 import { useDeleteAnswer } from '../hooks/useDeleteAnswer.js';
 import { useUpdateAnswer } from '../hooks/useUpdateAnswer.js';
 import styles from './AnswerLibraryPanel.module.css';
-
-const answerKindOptions = [
-  'salaryExpectation',
-  'englishLevel',
-  'availability',
-  'workAuthorization',
-  'relocation',
-  'travel',
-  'location',
-  'legalQuestions',
-  'custom',
-];
-
-const certaintyOptions = [
-  'CONFIRMED',
-  'INFERRED',
-  'REQUIRES_APPROVAL',
-  'UNKNOWN',
-  'PROHIBITED',
-];
 
 const defaultForm = {
   kind: 'custom',
@@ -48,7 +38,7 @@ export function AnswerLibraryPanel() {
   async function handleCreateSubmit(event) {
     event.preventDefault();
     const payload = buildPayload(createForm);
-    const validationError = getAnswerFormValidationError(payload);
+    const validationError = getAnswerFormValidationError(payload, text);
 
     if (validationError) {
       setCreateValidationError(validationError);
@@ -89,7 +79,7 @@ export function AnswerLibraryPanel() {
         </div>
       </form>
 
-      {answersQuery.isLoading ? <p className={styles.message}>Cargando respuestas...</p> : null}
+      {answersQuery.isLoading ? <p className={styles.message}>{dashboardText.common.loadingAnswers}</p> : null}
       {answersQuery.isError ? <p className={styles.error}>{answersQuery.error.message}</p> : null}
 
       {!answersQuery.isLoading && !answersQuery.isError ? (
@@ -116,8 +106,8 @@ export function AnswerLibraryPanel() {
                 <article key={item.id} className={styles.answerCard}>
                   <div className={styles.answerMeta}>
                     <strong>{item.question}</strong>
-                    <span>{item.kind}</span>
-                    <span>{item.certainty}</span>
+                    <span>{getLabel(answerKindMeta, item.kind, item.kind)}</span>
+                    <span>{getLabel(certaintyMeta, item.certainty, item.certainty)}</span>
                   </div>
                   <p className={styles.answerBody}>{item.answer}</p>
                   <p className={styles.tags}>{item.tags.join(', ') || text.tagsHint}</p>
@@ -133,8 +123,8 @@ export function AnswerLibraryPanel() {
                     >
                       {deleteMutation.isPending ? text.deleteBusy : text.deleteIdle}
                     </button>
-                    <span className={`${styles.usageBadge} ${styles[mapUsageTone(item.certainty)]}`}>
-                      {mapUsageLabel(item.certainty)}
+                    <span className={`${styles.usageBadge} ${styles[getMeta(usageStatusMeta, mapCertaintyToUsageStatus(item.certainty)).tone]}`}>
+                      {getMeta(usageStatusMeta, mapCertaintyToUsageStatus(item.certainty)).label}
                     </span>
                   </div>
                 </article>
@@ -165,7 +155,7 @@ function EditableAnswerCard({ item, onCancel, onSave, isSaving, error }) {
   async function handleSubmit(event) {
     event.preventDefault();
     const payload = buildPayload(form);
-    const nextValidationError = getAnswerFormValidationError(payload);
+    const nextValidationError = getAnswerFormValidationError(payload, text);
 
     if (nextValidationError) {
       setValidationError(nextValidationError);
@@ -214,7 +204,7 @@ function AnswerFields({ values, onChange }) {
           <select value={values.kind} onChange={(event) => patch({ kind: event.target.value })}>
             {answerKindOptions.map((option) => (
               <option key={option} value={option}>
-                {option}
+                {getLabel(answerKindMeta, option, option)}
               </option>
             ))}
           </select>
@@ -225,7 +215,7 @@ function AnswerFields({ values, onChange }) {
           <select value={values.certainty} onChange={(event) => patch({ certainty: event.target.value })}>
             {certaintyOptions.map((option) => (
               <option key={option} value={option}>
-                {option}
+                {getLabel(certaintyMeta, option, option)}
               </option>
             ))}
           </select>
@@ -264,13 +254,13 @@ function buildPayload(form) {
   };
 }
 
-function getAnswerFormValidationError(payload) {
+function getAnswerFormValidationError(payload, text) {
   if (!payload.question) {
-    return 'La pregunta es obligatoria.';
+    return text.validationQuestionRequired;
   }
 
   if (!payload.answer) {
-    return 'La respuesta es obligatoria.';
+    return text.validationAnswerRequired;
   }
 
   return null;
@@ -298,22 +288,3 @@ function getValidationMessages(error) {
   return getApiValidationMessages(error);
 }
 
-function mapUsageLabel(certainty) {
-  if (certainty === 'CONFIRMED' || certainty === 'INFERRED') {
-    return dashboardText.answers.usageReferenceOnly;
-  }
-  if (certainty === 'REQUIRES_APPROVAL') {
-    return dashboardText.answers.usageReviewRequired;
-  }
-  return dashboardText.answers.usageDoNotUse;
-}
-
-function mapUsageTone(certainty) {
-  if (certainty === 'CONFIRMED' || certainty === 'INFERRED') {
-    return 'good';
-  }
-  if (certainty === 'REQUIRES_APPROVAL') {
-    return 'warn';
-  }
-  return 'bad';
-}
