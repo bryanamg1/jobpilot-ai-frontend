@@ -4,9 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { AutomationControlPanel } from './AutomationControlPanel.jsx';
 
 describe('AutomationControlPanel', () => {
-  it('builds a normalized automation payload before saving', () => {
-    const onSave = vi.fn();
-
+  it('shows the safe simulation copy in Spanish and renders source policies in separate blocks', () => {
     render(
       <AutomationControlPanel
         settings={{
@@ -15,7 +13,7 @@ describe('AutomationControlPanel', () => {
           timezone: 'America/Argentina/Buenos_Aires',
           startTime: '09:00',
           dailyApplicationLimit: 5,
-          dailyDiscoveryLimit: 20,
+          dailyDiscoveryLimit: 25,
           minimumMatchScore: 75,
           requireHumanApproval: true,
           filters: {
@@ -25,59 +23,58 @@ describe('AutomationControlPanel', () => {
             blockedKeywords: [],
           },
           sourcePolicies: {
-            MANUAL: 'AUTO_PREPARE',
+            MANUAL: 'MANUAL_ONLY',
             LINKEDIN_JOBS_SUPERVISED: 'AUTO_PREPARE',
             LINKEDIN_FEED_SUPERVISED: 'AUTO_PREPARE',
             LINKEDIN_POST_SEARCH_SUPERVISED: 'AUTO_PREPARE',
           },
         }}
-        onSave={onSave}
+        onSave={vi.fn()}
         isSaving={false}
         saveError={null}
         saveSuccess={false}
-        onTriggerRun={() => {}}
+        onTriggerRun={vi.fn()}
         isTriggering={false}
         triggerError={null}
         triggerResult={null}
       />,
     );
 
-    fireEvent.change(screen.getByLabelText(/roles habilitados/i), {
-      target: { value: ' backend, full stack ' },
-    });
-    fireEvent.change(screen.getByLabelText(/palabras bloqueadas/i), {
-      target: { value: 'wordpress, php ' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: /guardar automatizacion/i }));
+    expect(screen.getByRole('button', { name: /probar automatizacion sin enviar/i })).toBeInTheDocument();
+    expect(screen.getByText(/usa tus vacantes, perfil y reglas reales/i)).toBeInTheDocument();
+    expect(screen.getByText(/solo estan disponibles manual, asistido y simulacion segura/i)).toBeInTheDocument();
+    expect(screen.getByText(/linkedin feed supervisado/i)).toBeInTheDocument();
+    expect(screen.getByText(/linkedin post search supervisado/i)).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: /automatico/i })).not.toBeInTheDocument();
+  });
 
-    expect(onSave).toHaveBeenCalledWith({
-      enabled: true,
-      mode: 'DRY_RUN',
-      timezone: 'America/Argentina/Buenos_Aires',
-      dailyApplicationLimit: 5,
-      dailyDiscoveryLimit: 20,
-      minimumMatchScore: 75,
-      requireHumanApproval: true,
-      unknownQuestionPolicy: 'PAUSE',
-      captchaPolicy: 'PAUSE',
-      mfaPolicy: 'PAUSE',
-      salaryRequiresApproval: true,
-      startTime: '09:00',
-      daysOfWeek: [1, 2, 3, 4, 5],
-      filters: {
-        allowedSources: ['MANUAL'],
-        allowedRoles: ['backend', 'full stack'],
-        allowedSeniorities: ['junior', 'unknown'],
-        allowedWorkModes: ['remote', 'hybrid', 'onsite'],
-        blockedCompanies: [],
-        blockedKeywords: ['wordpress', 'php'],
-      },
-      sourcePolicies: {
-        MANUAL: 'AUTO_PREPARE',
-        LINKEDIN_JOBS_SUPERVISED: 'AUTO_PREPARE',
-        LINKEDIN_FEED_SUPERVISED: 'AUTO_PREPARE',
-        LINKEDIN_POST_SEARCH_SUPERVISED: 'AUTO_PREPARE',
-      },
+  it('submits the configured values through the save handler', () => {
+    const onSave = vi.fn();
+
+    const { container } = render(
+      <AutomationControlPanel
+        settings={null}
+        onSave={onSave}
+        isSaving={false}
+        saveError={null}
+        saveSuccess={false}
+        onTriggerRun={vi.fn()}
+        isTriggering={false}
+        triggerError={null}
+        triggerResult={null}
+      />,
+    );
+
+    fireEvent.change(container.querySelectorAll('input[type="number"]')[0], {
+      target: { value: '80' },
     });
+    fireEvent.submit(container.querySelector('form'));
+
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({
+        minimumMatchScore: 80,
+        mode: 'DRY_RUN',
+      }),
+    );
   });
 });

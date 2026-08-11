@@ -6,6 +6,7 @@
   box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
   display: grid;
   gap: 18px;
+  min-width: 0;
 }
 
 .header,
@@ -13,6 +14,7 @@
 .list {
   display: grid;
   gap: 12px;
+  min-width: 0;
 }
 
 .header h2,
@@ -32,17 +34,81 @@
   background: #fffdfa;
   border: 1px solid rgba(31, 36, 48, 0.08);
   display: grid;
-  gap: 6px;
+  gap: 10px;
+  min-width: 0;
 }
 
 .row {
   display: flex;
   justify-content: space-between;
   gap: 12px;
+  align-items: start;
+  flex-wrap: wrap;
+}
+
+.row strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(23, 32, 51, 0.08);
+  color: #172033;
+  font-size: 0.88rem;
+}
+
+.metaList {
+  display: grid;
+  grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+  gap: 8px 12px;
+  margin: 0;
+}
+
+.metaList dt,
+.metaList dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.metaList dt {
+  font-weight: 600;
+  color: #1f2430;
+}
+
+.metaList dd {
+  color: #5c6473;
+  overflow-wrap: anywhere;
+}
+
+.summaryBlock {
+  display: grid;
+  gap: 8px;
+}
+
+.summaryTitle {
+  margin: 0;
+  font-weight: 600;
+  color: #1f2430;
+}
+
+.summaryList {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: #5c6473;
 }
 
 .empty {
   margin: 0;
   color: #5c6473;
+}
+
+@media (max-width: 640px) {
+  .metaList {
+    grid-template-columns: 1fr;
+  }
 }
 

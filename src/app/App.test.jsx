@@ -1,9 +1,10 @@
 ﻿import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import '@testing-library/jest-dom/vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App.jsx';
+import { resetApiConnectionState } from '../shared/lib/apiConnectionStore.js';
 
 describe('App', () => {
   beforeEach(() => {
@@ -263,10 +264,88 @@ describe('App', () => {
   });
 
   afterEach(() => {
+    cleanup();
     vi.unstubAllGlobals();
+    resetApiConnectionState();
   });
 
-  it('renders the dashboard shell and metrics', async () => {
+  it('redirects to /dashboard and renders the executive summary shell', async () => {
+    const queryClient = new QueryClient();
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/']}>
+          <App />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText(/resumen ejecutivo del agente/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^vacantes$/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^automatizacion$/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^ejecuciones$/i })).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getAllByText('1').length).toBeGreaterThan(0);
+    });
+  });
+
+  it('renders the dedicated automation route', async () => {
+    const queryClient = new QueryClient();
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/automation']}>
+          <App />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText(/centro de automatizacion/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /probar automatizacion sin enviar/i })).toBeInTheDocument();
+    });
+  });
+
+  it('renders the dedicated jobs route', async () => {
+    const queryClient = new QueryClient();
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/jobs']}>
+          <App />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText(/operacion de vacantes/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /analizar vacante/i })).toBeInTheDocument();
+    });
+  });
+
+  it('renders the dedicated automation runs route', async () => {
+    const queryClient = new QueryClient();
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/automation/runs']}>
+          <App />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText(/ejecuciones del runner/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/postulaciones y ejecuciones/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows a single centralized API offline message when the backend is disconnected', async () => {
+    globalThis.fetch.mockRejectedValue(new TypeError('Failed to fetch'));
     const queryClient = new QueryClient();
 
     render(
@@ -277,11 +356,11 @@ describe('App', () => {
       </QueryClientProvider>,
     );
 
-    expect(screen.getByText(/pipeline de postulaciones/i)).toBeInTheDocument();
-
     await waitFor(() => {
-      expect(screen.getAllByText('1').length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/no se pudo conectar con jobpilot api/i).length).toBeGreaterThan(0);
     });
+
+    expect(screen.queryByText(/failed to fetch/i)).not.toBeInTheDocument();
   });
 });
 

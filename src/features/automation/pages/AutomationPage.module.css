@@ -1,0 +1,94 @@
+.statusGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.statusCard,
+.message,
+.panel {
+  border-radius: 22px;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
+  min-width: 0;
+}
+
+.statusCard span {
+  display: block;
+  margin-bottom: 10px;
+  color: #5c6473;
+}
+
+.statusCard strong {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.95fr) minmax(0, 1.05fr);
+  gap: 22px;
+}
+
+.left,
+.right {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+  min-width: 0;
+}
+
+.panelHeader {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.panelHeader h2,
+.panelHeader p,
+.linkCard strong {
+  margin: 0;
+}
+
+.panelHeader p,
+.linkCard span {
+  color: #5c6473;
+  margin: 0;
+}
+
+.linkGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.linkCard {
+  display: grid;
+  gap: 8px;
+  text-decoration: none;
+  padding: 18px;
+  border-radius: 18px;
+  background: #fffdfa;
+  border: 1px solid rgba(31, 36, 48, 0.08);
+  color: #172033;
+}
+
+@media (max-width: 1200px) {
+  .statusGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .statusGrid {
+    grid-template-columns: 1fr;
+  }
+}

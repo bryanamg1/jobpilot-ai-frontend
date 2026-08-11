@@ -10,6 +10,7 @@ import {
   mapCertaintyToUsageStatus,
   usageStatusMeta,
 } from '../../../constants/statusMeta.js';
+import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
 import { getApiValidationMessages } from '../../../shared/lib/apiValidation.js';
 import { useAnswersQuery } from '../hooks/useAnswersQuery.js';
 import { useCreateAnswer } from '../hooks/useCreateAnswer.js';
@@ -80,7 +81,7 @@ export function AnswerLibraryPanel() {
       </form>
 
       {answersQuery.isLoading ? <p className={styles.message}>{dashboardText.common.loadingAnswers}</p> : null}
-      {answersQuery.isError ? <p className={styles.error}>{answersQuery.error.message}</p> : null}
+      {answersQuery.isError ? <ErrorNotice error={answersQuery.error} /> : null}
 
       {!answersQuery.isLoading && !answersQuery.isError ? (
         answersQuery.data.length ? (
@@ -136,7 +137,7 @@ export function AnswerLibraryPanel() {
         )
       ) : null}
 
-      {deleteMutation.isError ? <p className={styles.error}>{deleteMutation.error.message}</p> : null}
+      {deleteMutation.isError ? <ErrorNotice error={deleteMutation.error} /> : null}
     </section>
   );
 }
@@ -270,7 +271,7 @@ function ValidationErrors({ error }) {
   const messages = getValidationMessages(error);
 
   if (!messages.length) {
-    return <p className={styles.error}>{error.message}</p>;
+    return <ErrorNotice error={error} />;
   }
 
   return (

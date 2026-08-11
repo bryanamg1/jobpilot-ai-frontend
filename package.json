@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --config vite.build.config.js --configLoader native",
-    "build": "vite build --config vite.build.config.js --configLoader native",
+    "dev": "vite --config vite.app.config.js --configLoader native",
+    "build": "vite build --config vite.app.config.js --configLoader native",
     "preview": "vite preview",
     "test": "vitest run --environment jsdom --pool threads",
     "test:watch": "vitest --environment jsdom --pool threads",

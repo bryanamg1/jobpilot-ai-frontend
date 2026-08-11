@@ -1,5 +1,6 @@
 ﻿import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ApiError, fetchJson } from './fetchJson.js';
+import { ApiError, ApiUnavailableError, fetchJson } from './fetchJson.js';
+import { getApiConnectionSnapshot, resetApiConnectionState } from './apiConnectionStore.js';
 
 describe('fetchJson', () => {
   beforeEach(() => {
@@ -8,6 +9,7 @@ describe('fetchJson', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    resetApiConnectionState();
   });
 
   it('returns the JSON payload for successful responses', async () => {
@@ -95,6 +97,13 @@ describe('fetchJson', () => {
 
   it('exports ApiError for downstream consumers', () => {
     expect(new ApiError({ message: 'boom' }, 500)).toBeInstanceOf(Error);
+  });
+
+  it('marks the API as offline and throws ApiUnavailableError on connection failures', async () => {
+    globalThis.fetch.mockRejectedValue(new TypeError('Failed to fetch'));
+
+    await expect(fetchJson('/health')).rejects.toBeInstanceOf(ApiUnavailableError);
+    expect(getApiConnectionSnapshot().status).toBe('offline');
   });
 });
 

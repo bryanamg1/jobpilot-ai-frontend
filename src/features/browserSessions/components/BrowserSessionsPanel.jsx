@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { dashboardText } from '../../../constants/dashboardText.js';
+import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
 import styles from './BrowserSessionsPanel.module.css';
 
 export function BrowserSessionsPanel({
@@ -57,7 +58,7 @@ export function BrowserSessionsPanel({
       <p className={styles.meta}>{text.providerHint}</p>
 
       {isLoading ? <p className={styles.message}>Cargando sesiones...</p> : null}
-      {error ? <p className={styles.error}>{error.message}</p> : null}
+      {error ? <ErrorNotice error={error} /> : null}
 
       {!isLoading && !error ? (
         activeSessions.length ? (

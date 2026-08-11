@@ -13,6 +13,7 @@ import {
   previewStatusMeta,
   usageStatusMeta,
 } from '../../../constants/statusMeta.js';
+import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
 import styles from './DraftPreviewPanel.module.css';
 
 export function DraftPreviewPanel({
@@ -36,7 +37,11 @@ export function DraftPreviewPanel({
   }
 
   if (error) {
-    return <section className={`${styles.panel} ${styles.error}`}>{error.message}</section>;
+    return (
+      <section className={styles.panel}>
+        <ErrorNotice error={error} />
+      </section>
+    );
   }
 
   if (!preview) {
@@ -108,9 +113,9 @@ export function DraftPreviewPanel({
       ) : null}
 
       {dryRunError ? (
-        <section className={`${styles.section} ${styles.error}`}>
+        <section className={styles.section}>
           <h3>{draftText.warnings}</h3>
-          <p className={styles.empty}>{dryRunError.message}</p>
+          <ErrorNotice error={dryRunError} />
         </section>
       ) : null}
 
@@ -137,9 +142,9 @@ export function DraftPreviewPanel({
       ) : null}
 
       {gmailDraftError ? (
-        <section className={`${styles.section} ${styles.error}`}>
+        <section className={styles.section}>
           <h3>{draftText.warnings}</h3>
-          <p className={styles.empty}>{gmailDraftError.message}</p>
+          <ErrorNotice error={gmailDraftError} />
         </section>
       ) : null}
 

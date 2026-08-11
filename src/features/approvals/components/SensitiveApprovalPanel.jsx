@@ -8,6 +8,7 @@ import {
   getLabel,
   getMeta,
 } from '../../../constants/statusMeta.js';
+import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
 import styles from './SensitiveApprovalPanel.module.css';
 
 export function SensitiveApprovalPanel({
@@ -72,7 +73,7 @@ export function SensitiveApprovalPanel({
       </div>
 
       {isLoading ? <p className={styles.message}>{dashboardText.common.loadingApprovals}</p> : null}
-      {error ? <p className={styles.error}>{error.message}</p> : null}
+      {error ? <ErrorNotice error={error} /> : null}
 
       {!isLoading && !error ? (
         <>

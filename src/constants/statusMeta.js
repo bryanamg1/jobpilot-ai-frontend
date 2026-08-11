@@ -56,8 +56,8 @@ export const agentRunStatusMeta = {
 export const agentRunModeMeta = {
   MANUAL: 'Manual',
   ASSISTED: 'Asistido',
-  AUTOMATIC: 'Automatico',
-  DRY_RUN: 'Simulacion DRY_RUN',
+  AUTOMATIC: 'Automatico (no habilitado en esta fase)',
+  DRY_RUN: 'Simulacion segura (sin enviar)',
 };
 
 export const sourcePolicyMeta = {
@@ -145,12 +145,17 @@ export const factFieldMeta = {
 
 export const healthStatusMeta = {
   ok: 'Operativo',
+  online: 'En linea',
   configured: 'Configurado',
+  ready: 'Listo',
   connected: 'Conectado',
   disconnected: 'No conectado',
   disabled: 'Deshabilitado',
   error: 'Con error',
   degraded: 'Degradado',
+  unavailable: 'No disponible',
+  running: 'En ejecucion',
+  stopped: 'Detenido',
   closed: 'Cerrado',
   open: 'Abierto',
   half_open: 'Semiabierto',
@@ -172,7 +177,9 @@ export const integrationStatusMeta = {
   connected: 'Conectado',
   disabled: 'Deshabilitado',
   error: 'Con error',
+  ready: 'Listo',
   missing: 'Falta configuracion',
+  unavailable: 'No disponible',
   disconnected: 'No conectado',
 };
 
@@ -264,11 +271,20 @@ export function formatRunSummary(summary) {
   if (summary.awaitingApproval != null) {
     parts.push(`Con aprobacion pendiente: ${summary.awaitingApproval}`);
   }
+  if (summary.blockedByConfiguration != null) {
+    parts.push(`Bloqueadas por configuracion: ${summary.blockedByConfiguration}`);
+  }
   if (summary.blockedByPolicy != null) {
     parts.push(`Bloqueadas por politica: ${summary.blockedByPolicy}`);
   }
   if (summary.rejectedByRules != null) {
     parts.push(`Rechazadas por reglas: ${summary.rejectedByRules}`);
+  }
+  if (summary.duplicates != null) {
+    parts.push(`Duplicadas: ${summary.duplicates}`);
+  }
+  if (summary.failed != null) {
+    parts.push(`Con error: ${summary.failed}`);
   }
 
   return parts.join(' | ') || 'Sin resumen disponible.';

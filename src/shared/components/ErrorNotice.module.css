@@ -1,0 +1,30 @@
+.notice {
+  border-radius: 18px;
+  padding: 16px 18px;
+  background: rgba(255, 242, 244, 0.98);
+  border: 1px solid rgba(140, 36, 56, 0.18);
+  color: #6c1f2e;
+  display: grid;
+  gap: 8px;
+}
+
+.notice strong,
+.notice p {
+  margin: 0;
+}
+
+.notice span {
+  font-weight: 700;
+}
+
+.notice button {
+  justify-self: start;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #6c1f2e;
+  color: #fff7f8;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}

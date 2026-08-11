@@ -1,4 +1,5 @@
 import { dashboardText } from '../../../constants/dashboardText.js';
+import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
 import styles from './GmailAlertsPanel.module.css';
 
 export function GmailAlertsPanel({ alerts, isLoading, error, isConnected }) {
@@ -14,7 +15,11 @@ export function GmailAlertsPanel({ alerts, isLoading, error, isConnected }) {
   }
 
   if (error) {
-    return <section className={`${styles.panel} ${styles.error}`}>{error.message}</section>;
+    return (
+      <section className={styles.panel}>
+        <ErrorNotice error={error} />
+      </section>
+    );
   }
 
   return (

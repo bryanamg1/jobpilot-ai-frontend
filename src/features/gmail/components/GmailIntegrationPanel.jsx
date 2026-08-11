@@ -1,4 +1,5 @@
 import { dashboardText } from '../../../constants/dashboardText.js';
+import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
 import styles from './GmailIntegrationPanel.module.css';
 
 export function GmailIntegrationPanel({
@@ -17,7 +18,11 @@ export function GmailIntegrationPanel({
   }
 
   if (error) {
-    return <section className={`${styles.panel} ${styles.error}`}>{error.message}</section>;
+    return (
+      <section className={styles.panel}>
+        <ErrorNotice error={error} />
+      </section>
+    );
   }
 
   return (

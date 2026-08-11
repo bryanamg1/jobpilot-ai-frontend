@@ -8,7 +8,7 @@ describe('statusMeta', () => {
   });
 
   it('mapea los modos y politicas de automatizacion a etiquetas legibles', () => {
-    expect(getLabel(agentRunModeMeta, 'DRY_RUN')).toBe('Simulacion DRY_RUN');
+    expect(getLabel(agentRunModeMeta, 'DRY_RUN')).toBe('Simulacion segura (sin enviar)');
     expect(getLabel(sourcePolicyMeta, 'AUTO_PREPARE')).toBe('Preparacion automatica con revision');
   });
 });

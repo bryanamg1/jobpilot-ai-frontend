@@ -1,0 +1,50 @@
+.banner {
+  border-radius: 22px;
+  padding: 18px 20px;
+  background: rgba(140, 36, 56, 0.1);
+  border: 1px solid rgba(140, 36, 56, 0.22);
+  color: #5b1525;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.copy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.copy strong,
+.copy p,
+.copy small {
+  margin: 0;
+}
+
+.copy p,
+.copy small {
+  color: #6a2334;
+}
+
+.button {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #5b1525;
+  color: #fff7f8;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .banner {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+}

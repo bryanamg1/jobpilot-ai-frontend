@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { dashboardText } from '../../../constants/dashboardText.js';
+import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
 import { applyApiFieldErrors } from '../../../shared/lib/apiValidation.js';
 import { useCreateManualJob } from '../hooks/useCreateManualJob.js';
 import styles from './ManualJobForm.module.css';
@@ -42,10 +43,7 @@ export function ManualJobForm() {
     } catch (error) {
       const applied = applyApiFieldErrors(error, setError);
       if (!applied) {
-        setError('root.server', {
-          type: 'server',
-          message: error.message,
-        });
+        return;
       }
     }
   });
@@ -83,7 +81,7 @@ export function ManualJobForm() {
             {mutation.isPending ? dashboardText.form.submitBusy : dashboardText.form.submitIdle}
           </button>
           {mutation.isSuccess ? <p className={styles.success}>{dashboardText.form.success}</p> : null}
-          {errors.root?.server?.message ? <p className={styles.error}>{errors.root.server.message}</p> : null}
+          {mutation.isError ? <ErrorNotice error={mutation.error} /> : null}
         </div>
       </form>
     </section>

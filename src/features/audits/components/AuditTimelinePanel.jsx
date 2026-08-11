@@ -1,4 +1,5 @@
 import { dashboardText } from '../../../constants/dashboardText.js';
+import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
 import styles from './AuditTimelinePanel.module.css';
 
 export function AuditTimelinePanel({ events, isLoading, error, selectedJob }) {
@@ -17,7 +18,7 @@ export function AuditTimelinePanel({ events, isLoading, error, selectedJob }) {
       </div>
 
       {isLoading ? <p className={styles.message}>Cargando timeline...</p> : null}
-      {error ? <p className={styles.error}>{error.message}</p> : null}
+      {error ? <ErrorNotice error={error} /> : null}
 
       {!isLoading && !error ? (
         events.length ? (

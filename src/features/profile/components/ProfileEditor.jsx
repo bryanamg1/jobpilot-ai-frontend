@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { dashboardText } from '../../../constants/dashboardText.js';
+import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
 import { applyApiFieldErrors } from '../../../shared/lib/apiValidation.js';
 import { useUpdateProfile } from '../hooks/useUpdateProfile.js';
 import styles from './ProfileEditor.module.css';
@@ -27,9 +28,9 @@ const profileSchema = z.object({
 });
 
 const modalityOptions = [
-  { value: 'remote', label: 'Remote' },
-  { value: 'hybrid', label: 'Hybrid' },
-  { value: 'onsite', label: 'Onsite' },
+  { value: 'remote', label: dashboardText.profile.modalityLabels.remote },
+  { value: 'hybrid', label: dashboardText.profile.modalityLabels.hybrid },
+  { value: 'onsite', label: dashboardText.profile.modalityLabels.onsite },
 ];
 
 export function ProfileEditor({ profile }) {
@@ -81,10 +82,7 @@ export function ProfileEditor({ profile }) {
     } catch (error) {
       const applied = applyApiFieldErrors(error, setError, profileFieldMap);
       if (!applied) {
-        setError('root.server', {
-          type: 'server',
-          message: error.message,
-        });
+        return;
       }
     }
   });
@@ -130,9 +128,9 @@ export function ProfileEditor({ profile }) {
           </Field>
           <Field label={dashboardText.profile.salaryPeriod} error={errors.salaryPeriod?.message}>
             <select {...register('salaryPeriod')}>
-              <option value="monthly">monthly</option>
-              <option value="yearly">yearly</option>
-              <option value="hourly">hourly</option>
+              <option value="monthly">{dashboardText.profile.salaryPeriodLabels.monthly}</option>
+              <option value="yearly">{dashboardText.profile.salaryPeriodLabels.yearly}</option>
+              <option value="hourly">{dashboardText.profile.salaryPeriodLabels.hourly}</option>
             </select>
           </Field>
         </div>
@@ -194,7 +192,7 @@ export function ProfileEditor({ profile }) {
             {mutation.isPending ? dashboardText.profile.saveBusy : dashboardText.profile.saveIdle}
           </button>
           {mutation.isSuccess ? <p className={styles.success}>{dashboardText.profile.saveSuccess}</p> : null}
-          {errors.root?.server?.message ? <p className={styles.error}>{errors.root.server.message}</p> : null}
+          {mutation.isError ? <ErrorNotice error={mutation.error} /> : null}
         </div>
       </form>
     </section>

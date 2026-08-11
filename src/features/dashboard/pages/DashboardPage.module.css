@@ -10,6 +10,7 @@
   color: #f7f2e7;
   border-radius: 22px;
   padding: 18px 20px;
+  min-width: 0;
 }
 
 .metricCard span {
@@ -24,92 +25,154 @@
 
 .layout {
   display: grid;
-  grid-template-columns: 360px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
   gap: 22px;
 }
 
-.left,
-.right {
+.primaryColumn,
+.secondaryColumn {
   display: grid;
   gap: 18px;
   align-content: start;
+  min-width: 0;
 }
 
+.panel,
 .message {
-  border-radius: 18px;
-  padding: 18px;
-  background: rgba(255, 255, 255, 0.82);
-}
-
-.operationsPanel {
   border-radius: 22px;
   padding: 22px;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(31, 36, 48, 0.08);
   box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
-  display: grid;
-  gap: 16px;
+  min-width: 0;
 }
 
-.operationsPanel h2,
-.operationsPanel h3,
-.operationsCard strong {
+.panelHeader {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.panelHeader h2,
+.panelHeader p,
+.statusCard strong,
+.quickLinkCard strong,
+.jobCard strong {
   margin: 0;
 }
 
-.operationsPanel p,
-.operationsCard span,
-.operationsCircuitList li {
+.panelHeader p,
+.statusCard span,
+.quickLinkCard span,
+.jobCard p,
+.metaList dt,
+.metaList dd {
   margin: 0;
   color: #5c6473;
 }
 
-.operationsGrid {
+.quickLinkCard {
+  display: grid;
+  gap: 8px;
+  text-decoration: none;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(23, 32, 51, 0.96), rgba(58, 74, 110, 0.92));
+  color: #f7f2e7;
+}
+
+.quickLinkCard span {
+  color: rgba(247, 242, 231, 0.78);
+}
+
+.quickLinksGrid {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 900px) {
+  .quickLinksGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.statusGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
-.operationsCard {
+.statusCard,
+.jobCard {
   border-radius: 16px;
-  padding: 14px;
+  padding: 16px;
   background: #fffdfa;
   border: 1px solid rgba(31, 36, 48, 0.08);
   display: grid;
-  gap: 6px;
+  gap: 8px;
+  min-width: 0;
 }
 
-.operationsCircuitList {
-  margin: 0;
-  padding-left: 18px;
+.jobsList {
   display: grid;
-  gap: 6px;
+  gap: 12px;
 }
 
-.error {
-  color: #8c2438;
+.jobHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.neutral {
-  color: #465062;
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(23, 32, 51, 0.08);
+  color: #172033;
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
-@media (max-width: 1024px) {
+.metaList {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 10px;
+}
+
+.empty {
+  margin: 0;
+  color: #5c6473;
+}
+
+@media (max-width: 1200px) {
   .metricGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
 
+@media (max-width: 1024px) {
   .layout {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
-  .metricGrid {
+  .metricGrid,
+  .statusGrid {
     grid-template-columns: 1fr;
   }
 
-  .operationsGrid {
-    grid-template-columns: 1fr;
+  .panel,
+  .message {
+    padding: 18px;
+  }
+
+  .jobHeader {
+    align-items: start;
+    flex-direction: column;
   }
 }

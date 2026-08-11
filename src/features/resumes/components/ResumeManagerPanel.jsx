@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { dashboardText } from '../../../constants/dashboardText.js';
+import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
 import { fileToBase64 } from '../../../shared/lib/fileToBase64.js';
 import styles from './ResumeManagerPanel.module.css';
 
@@ -82,12 +83,12 @@ export function ResumeManagerPanel({
             {isUploading ? text.uploadBusy : text.uploadIdle}
           </button>
           {uploadSuccess ? <p className={styles.success}>{text.uploadSuccess}</p> : null}
-          {uploadError ? <p className={styles.error}>{uploadError.message}</p> : null}
+          {uploadError ? <ErrorNotice error={uploadError} /> : null}
         </div>
       </form>
 
       {isLoading ? <p className={styles.message}>Cargando CVs...</p> : null}
-      {error ? <p className={styles.error}>{error.message}</p> : null}
+      {error ? <ErrorNotice error={error} /> : null}
       {!isLoading && !error ? (
         resumes.length ? (
           <div className={styles.list}>
@@ -173,7 +174,7 @@ function ResumeAssignmentForm({ resumes, selectedJob, onAssignResume, isAssignin
         >
           {isAssigning ? text.clearBusy : text.clearIdle}
         </button>
-        {assignError ? <p className={styles.error}>{assignError.message}</p> : null}
+        {assignError ? <ErrorNotice error={assignError} /> : null}
       </div>
     </form>
   );

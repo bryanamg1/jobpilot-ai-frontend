@@ -7,6 +7,74 @@
   color: #1f2430;
 }
 
+.shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 28px 20px;
+  background: rgba(16, 21, 31, 0.96);
+  color: #f7f2e7;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  align-content: start;
+  gap: 24px;
+  z-index: 30;
+}
+
+.sidebarBrand {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebarEyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #d8b985;
+}
+
+.sidebarBrand strong {
+  font-size: 1.3rem;
+}
+
+.sidebarBrand span {
+  color: rgba(247, 242, 231, 0.72);
+  line-height: 1.5;
+}
+
+.nav {
+  display: grid;
+  gap: 10px;
+}
+
+.navLink {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: rgba(247, 242, 231, 0.88);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+}
+
+.navLinkActive {
+  background: rgba(255, 209, 102, 0.14);
+  border-color: rgba(255, 209, 102, 0.24);
+  color: #fff9ef;
+}
+
+.mainColumn {
+  min-width: 0;
+}
+
 .hero {
   max-width: 1160px;
   margin: 0 auto;
@@ -41,4 +109,59 @@
   max-width: 1160px;
   margin: 0 auto;
   padding: 0 24px 48px;
+}
+
+.menuButton,
+.overlay {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .menuButton {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 45;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 14px;
+    background: #172033;
+    color: #f7f2e7;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    transform: translateX(-100%);
+    width: min(82vw, 320px);
+    transition: transform 180ms ease;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.26);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    border: none;
+    background: rgba(13, 17, 24, 0.36);
+  }
+
+  .hero {
+    padding-top: 88px;
+  }
 }
