@@ -404,6 +404,20 @@ export const dashboardText = {
     subtitle:
       'Centraliza intake manual, capturas supervisadas, previsualizacion del borrador y revision humana sin mezclar configuracion del runner.',
   },
+  localAgent: {
+    title: 'Agente local',
+    subtitle:
+      'Muestra el estado del worker de escritorio que ejecuta Playwright fuera de Railway y reutiliza sesiones locales de LinkedIn.',
+    statusLabel: 'Estado',
+    connected: 'Conectado',
+    disconnected: 'Desconectado',
+    lastHeartbeatLabel: 'Ultimo heartbeat',
+    versionLabel: 'Version',
+    osLabel: 'SO',
+    testConnectionIdle: 'Probar conexion',
+    browserTestIdle: 'Ejecutar prueba de navegador',
+    browserTestBusy: 'Abriendo prueba...',
+  },
   applications: {
     title: 'Postulaciones y ejecuciones',
     subtitle:
@@ -479,7 +493,6 @@ export const dashboardText = {
     loginRequiredTitle: 'LinkedIn requiere iniciar sesion.',
     loginRequiredDescription:
       'Inicia sesion manualmente en la ventana supervisada, completa MFA o CAPTCHA si aparece y luego verifica el estado.',
-    openRemoteIdle: 'Abrir navegador remoto',
     verifyLoginIdle: 'Ya inicie sesion - verificar',
     verifyLoginBusy: 'Verificando sesion...',
     reusedStoredSession: 'Sesion autenticada reutilizada',
@@ -487,11 +500,8 @@ export const dashboardText = {
       'Se cargo una sesion guardada previamente para este contexto supervisado.',
     runtimeLabel: 'Runtime',
     runtimeLocal: 'Ventana local visible',
+    runtimeDesktopAgent: 'Agente local',
     runtimeBrowserless: 'Browserless remoto',
-    remoteRuntimeNotice:
-      'Esta sesion corre en Browserless. Usa el navegador remoto para iniciar sesion manualmente y luego verifica el estado.',
-    remoteRuntimePending:
-      'El backend ya puede usar Browserless, pero el acceso al visor remoto desde la app requiere una URL de depuracion protegida.',
     lastCaptured: 'Ultima vacante capturada',
     surfaceLabel: 'Superficie detectada',
     surfaces: {

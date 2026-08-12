@@ -8,7 +8,6 @@ export function BrowserSessionsPanel({
   isLoading,
   error,
   onStartSession,
-  onOpenRemoteBrowser,
   onRefreshSession,
   onNavigateSession,
   onCaptureJob,
@@ -99,9 +98,6 @@ export function BrowserSessionsPanel({
                     <div className={styles.attention}>
                       <strong>{requiresLogin ? text.loginRequiredTitle : text.attentionTitle}</strong>
                       {requiresLogin ? <p className={styles.meta}>{text.loginRequiredDescription}</p> : null}
-                      {session.metadata.runtimeKind === 'browserless' ? (
-                        <p className={styles.meta}>{text.remoteRuntimeNotice}</p>
-                      ) : null}
                       <ul>
                         {(session.metadata.attentionReasons || []).map((item) => (
                           <li key={item}>{formatAttentionReason(item)}</li>
@@ -151,16 +147,6 @@ export function BrowserSessionsPanel({
                   </label>
 
                   <div className={styles.actions}>
-                    {session.metadata.runtimeKind === 'browserless' ? (
-                      <button
-                        type="button"
-                        className={styles.secondaryButton}
-                        onClick={() => onOpenRemoteBrowser(session.id)}
-                        disabled={!session.metadata.runtimeAvailable}
-                      >
-                        {text.openRemoteIdle}
-                      </button>
-                    ) : null}
                     {requiresLogin ? (
                       <button
                         type="button"
@@ -246,6 +232,10 @@ function resolveSurfaceLabel(metadata = {}, text) {
 }
 
 function resolveRuntimeLabel(metadata = {}, text) {
+  if (metadata.runtimeKind === 'desktop_agent') {
+    return text.runtimeDesktopAgent;
+  }
+
   if (metadata.runtimeKind === 'browserless') {
     return text.runtimeBrowserless;
   }

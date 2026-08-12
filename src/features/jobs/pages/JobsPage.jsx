@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AuditTimelinePanel } from '../../audits/components/AuditTimelinePanel.jsx';
 import { BrowserSessionsPanel } from '../../browserSessions/components/BrowserSessionsPanel.jsx';
+import { LocalAgentPanel } from '../../browserSessions/components/LocalAgentPanel.jsx';
 import {
   captureBrowserSessionJob,
   closeBrowserSession,
@@ -14,10 +15,10 @@ import { dashboardText } from '../../../constants/dashboardText.js';
 import { ApiConnectionBanner } from '../../../shared/components/ApiConnectionBanner.jsx';
 import { AppShell } from '../../../shared/components/AppShell.jsx';
 import { ErrorNotice } from '../../../shared/components/ErrorNotice.jsx';
-import { API_BASE_URL } from '../../../shared/lib/apiConfig.js';
 import { useApiConnectionStatus } from '../../../shared/lib/useApiConnectionStatus.js';
 import { useAuditEventsQuery } from '../../audits/hooks/useAuditEventsQuery.js';
 import { useDashboardQuery } from '../../dashboard/hooks/useDashboardQuery.js';
+import { useHealthQuery } from '../../dashboard/hooks/useHealthQuery.js';
 import { useCreateGmailDraft } from '../../gmail/hooks/useCreateGmailDraft.js';
 import { useGmailStatusQuery } from '../../gmail/hooks/useGmailStatusQuery.js';
 import { ApprovalQueuePanel } from '../components/ApprovalQueuePanel.jsx';
@@ -35,6 +36,7 @@ export function JobsPage() {
   const [reviewState, setReviewState] = useState({ jobId: null, decision: null });
   const [browserActionState, setBrowserActionState] = useState({ sessionId: null, kind: null });
   const dashboardQuery = useDashboardQuery();
+  const healthQuery = useHealthQuery();
   const jobsQuery = useJobsQuery();
   const browserSessionsQuery = useBrowserSessionsQuery();
   const draftPreviewMutation = useCreateDraftPreview();
@@ -72,6 +74,7 @@ export function JobsPage() {
   function refetchJobsWorkspace() {
     void Promise.all([
       dashboardQuery.refetch(),
+      healthQuery.refetch(),
       jobsQuery.refetch(),
       browserSessionsQuery.refetch(),
       gmailStatusQuery.refetch(),
@@ -181,10 +184,6 @@ export function JobsPage() {
     });
   }
 
-  function handleOpenRemoteBrowser(sessionId) {
-    window.open(`${API_BASE_URL}/browser-sessions/${sessionId}/remote-control`, '_blank', 'noopener,noreferrer');
-  }
-
   return (
     <AppShell
       eyebrow={dashboardText.shell.eyebrow}
@@ -193,7 +192,7 @@ export function JobsPage() {
     >
       {isApiOffline ? (
         <ApiConnectionBanner
-          apiBaseUrl={API_BASE_URL}
+          apiBaseUrl={import.meta.env.VITE_API_BASE_URL || 'http://localhost:4300/api/v1'}
           lastCheckedAt={apiConnection.lastCheckedAt}
           onRetry={refetchJobsWorkspace}
         />
@@ -213,12 +212,18 @@ export function JobsPage() {
       <section className={styles.layout}>
         <div className={styles.left}>
           <ManualJobForm />
+          <LocalAgentPanel
+            health={healthQuery.data}
+            isLoading={healthQuery.isLoading}
+            onRetry={() => healthQuery.refetch()}
+            onRunBrowserTest={() => handleStartBrowserSession('LINKEDIN_JOBS')}
+            isStartingBrowserTest={browserActionState.kind === 'start'}
+          />
           <BrowserSessionsPanel
             sessions={browserSessions}
             isLoading={browserSessionsQuery.isLoading}
             error={browserSessionsQuery.error}
             onStartSession={handleStartBrowserSession}
-            onOpenRemoteBrowser={handleOpenRemoteBrowser}
             onRefreshSession={handleRefreshBrowserSession}
             onNavigateSession={handleNavigateBrowserSession}
             onCaptureJob={handleCaptureBrowserJob}

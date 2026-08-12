@@ -9,7 +9,6 @@ function createProps(overrides = {}) {
     isLoading: false,
     error: null,
     onStartSession: vi.fn(),
-    onOpenRemoteBrowser: vi.fn(),
     onRefreshSession: vi.fn(),
     onNavigateSession: vi.fn(),
     onCaptureJob: vi.fn(),
@@ -31,7 +30,7 @@ describe('BrowserSessionsPanel', () => {
             currentUrl: 'https://www.linkedin.com/jobs/',
             pageTitle: 'LinkedIn Jobs',
             runtimeAvailable: true,
-            runtimeKind: 'browserless',
+            runtimeKind: 'desktop_agent',
             requiresAttention: true,
             attentionReasons: ['LOGIN_REQUIRED'],
             hiringSignals: [],
@@ -44,11 +43,7 @@ describe('BrowserSessionsPanel', () => {
     render(<BrowserSessionsPanel {...props} />);
 
     expect(screen.getByText('LinkedIn requiere iniciar sesion.')).toBeInTheDocument();
-    expect(screen.getByText('Runtime: Browserless remoto')).toBeInTheDocument();
-    expect(screen.getByText('Esta sesion corre en Browserless. Usa el navegador remoto para iniciar sesion manualmente y luego verifica el estado.')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Abrir navegador remoto' }));
-    expect(props.onOpenRemoteBrowser).toHaveBeenCalledWith('session-1');
+    expect(screen.getByText('Runtime: Agente local')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Ya inicie sesion - verificar' }));
 
