@@ -4,6 +4,7 @@ import { AutomationRunsPage } from '../features/automation/pages/AutomationRunsP
 import { DashboardPage } from '../features/dashboard/pages/DashboardPage.jsx';
 import { GmailIntegrationPage } from '../features/gmail/pages/GmailIntegrationPage.jsx';
 import { JobsPage } from '../features/jobs/pages/JobsPage.jsx';
+import { ResumeManagerPage } from '../features/resumes/pages/ResumeManagerPage.jsx';
 
 export function AppRoutes() {
   return (
@@ -12,6 +13,8 @@ export function AppRoutes() {
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/integrations" element={<GmailIntegrationPage />} />
       <Route path="/integrations/gmail" element={<GmailIntegrationPage />} />
+      <Route path="/profile/resumes" element={<ResumeManagerPage />} />
+      <Route path="/resumes" element={<ResumeManagerPage />} />
       <Route path="/gmail-connected" element={<Navigate to="/integrations/gmail?gmail=connected" replace />} />
       <Route path="/gmail-disconnected" element={<Navigate to="/integrations/gmail?gmail=disconnected" replace />} />
       <Route path="/jobs" element={<JobsPage />} />

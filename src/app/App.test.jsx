@@ -282,6 +282,7 @@ describe('App', () => {
 
     expect(screen.getByText(/resumen ejecutivo del agente/i)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /^vacantes$/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^cvs$/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /^automatizacion$/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /^ejecuciones$/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /^integraciones$/i })).toBeInTheDocument();
@@ -360,6 +361,24 @@ describe('App', () => {
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /conectar gmail/i })).toBeInTheDocument();
+    });
+  });
+
+  it('renders the dedicated resumes route', async () => {
+    const queryClient = new QueryClient();
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/profile/resumes']}>
+          <App />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getAllByText(/gestor de cvs/i).length).toBeGreaterThan(0);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /cargar cv/i })).toBeInTheDocument();
     });
   });
 

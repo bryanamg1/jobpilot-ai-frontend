@@ -5,6 +5,12 @@ import { fileToBase64 } from '../../../shared/lib/fileToBase64.js';
 import styles from './ResumeManagerPanel.module.css';
 
 const ACCEPTED_FILES = '.pdf,.doc,.docx';
+const MAX_RESUME_BYTES = 5 * 1024 * 1024;
+const MIME_BY_EXTENSION = {
+  pdf: 'application/pdf',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+};
 
 export function ResumeManagerPanel({
   resumes,
@@ -22,15 +28,23 @@ export function ResumeManagerPanel({
   const text = dashboardText.resumes;
   const [label, setLabel] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
+  const [validationError, setValidationError] = useState(null);
   const fileInputRef = useRef(null);
 
   async function handleUploadSubmit(event) {
     event.preventDefault();
     if (!selectedFile) {
+      setValidationError(new Error(text.fileRequired));
       return;
     }
 
     try {
+      const validationMessage = validateResumeFile(selectedFile, text);
+      if (validationMessage) {
+        setValidationError(new Error(validationMessage));
+        return;
+      }
+
       const contentBase64 = await fileToBase64(selectedFile);
       await onUploadResume({
         label: label.trim() || buildDefaultLabel(selectedFile.name),
@@ -41,6 +55,7 @@ export function ResumeManagerPanel({
 
       setLabel('');
       setSelectedFile(null);
+      setValidationError(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -72,7 +87,11 @@ export function ResumeManagerPanel({
             ref={fileInputRef}
             type="file"
             accept={ACCEPTED_FILES}
-            onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)}
+            onChange={(event) => {
+              const nextFile = event.target.files?.[0] ?? null;
+              setSelectedFile(nextFile);
+              setValidationError(nextFile ? createValidationError(nextFile, text) : null);
+            }}
           />
         </label>
 
@@ -83,20 +102,30 @@ export function ResumeManagerPanel({
             {isUploading ? text.uploadBusy : text.uploadIdle}
           </button>
           {uploadSuccess ? <p className={styles.success}>{text.uploadSuccess}</p> : null}
+          {validationError ? <ErrorNotice error={validationError} /> : null}
           {uploadError ? <ErrorNotice error={uploadError} /> : null}
         </div>
       </form>
 
-      {isLoading ? <p className={styles.message}>Cargando CVs...</p> : null}
+      {isLoading ? <p className={styles.message}>{text.uploadLoading}</p> : null}
       {error ? <ErrorNotice error={error} /> : null}
       {!isLoading && !error ? (
         resumes.length ? (
           <div className={styles.list}>
             {resumes.map((resume) => (
               <article key={resume.id} className={styles.resumeItem}>
-                <strong>{resume.label}</strong>
-                <span>{resume.originalFileName}</span>
-                <span>{formatBytes(resume.sizeBytes)}</span>
+                <div className={styles.resumeHeader}>
+                  <strong>{resume.label}</strong>
+                  <span className={`${styles.badge} ${styles[resumeTone(resume, selectedJob)]}`}>
+                    {resumeStatusLabel(resume, selectedJob, text)}
+                  </span>
+                </div>
+                <dl className={styles.resumeMeta}>
+                  <MetaRow label={text.fileNameLabel} value={resume.originalFileName} />
+                  <MetaRow label={text.sizeLabel} value={formatBytes(resume.sizeBytes)} />
+                  <MetaRow label={text.uploadedAt} value={formatDate(resume.uploadedAt)} />
+                  <MetaRow label={text.statusLabel} value={formatAttachmentStatus(resume.attachmentStatus)} />
+                </dl>
               </article>
             ))}
           </div>
@@ -184,10 +213,84 @@ function buildDefaultLabel(fileName) {
   return String(fileName).replace(/\.[^.]+$/u, '');
 }
 
+function createValidationError(file, text) {
+  const validationMessage = validateResumeFile(file, text);
+  return validationMessage ? new Error(validationMessage) : null;
+}
+
+function validateResumeFile(file, text) {
+  const extension = String(file?.name ?? '')
+    .split('.')
+    .pop()
+    ?.toLowerCase();
+
+  if (!extension || !MIME_BY_EXTENSION[extension]) {
+    return text.invalidFormat;
+  }
+
+  if (file.size > MAX_RESUME_BYTES) {
+    return text.fileTooLarge;
+  }
+
+  if (file.type && file.type !== MIME_BY_EXTENSION[extension]) {
+    return text.invalidMimeType;
+  }
+
+  return null;
+}
+
 function formatBytes(value) {
   if (value >= 1024 * 1024) {
     return `${(value / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   return `${Math.max(1, Math.round(value / 1024))} KB`;
+}
+
+function formatDate(value) {
+  if (!value) {
+    return dashboardText.common.notAvailable;
+  }
+
+  try {
+    return new Intl.DateTimeFormat('es-AR', {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    }).format(new Date(value));
+  } catch {
+    return value;
+  }
+}
+
+function formatAttachmentStatus(value) {
+  if (value === 'MANUAL_REQUIRED') {
+    return 'Adjunto manual requerido';
+  }
+
+  if (value === 'ATTACHED') {
+    return 'Adjuntado';
+  }
+
+  return value || dashboardText.common.notAvailable;
+}
+
+function resumeStatusLabel(resume, selectedJob, text) {
+  if (selectedJob?.resumeSelection?.id === resume.id) {
+    return text.selectedStatus;
+  }
+
+  return text.availableStatus;
+}
+
+function resumeTone(resume, selectedJob) {
+  return selectedJob?.resumeSelection?.id === resume.id ? 'good' : 'neutral';
+}
+
+function MetaRow({ label, value }) {
+  return (
+    <>
+      <dt>{label}</dt>
+      <dd>{value || dashboardText.common.notAvailable}</dd>
+    </>
+  );
 }

@@ -83,7 +83,47 @@
   border-radius: 18px;
   padding: 14px;
   display: grid;
-  gap: 4px;
+  gap: 10px;
+}
+
+.resumeHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.good {
+  background: #d9f5e5;
+  color: #185834;
+}
+
+.neutral {
+  background: rgba(23, 32, 51, 0.08);
+  color: #172033;
+}
+
+.resumeMeta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 10px;
+  margin: 0;
+}
+
+.resumeMeta dt,
+.resumeMeta dd {
+  margin: 0;
+  color: #5c6473;
 }
 
 .assignment {

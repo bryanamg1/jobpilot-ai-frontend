@@ -6,6 +6,7 @@ import styles from './AppShell.module.css';
 const NAVIGATION_ITEMS = [
   { to: '/dashboard', label: dashboardText.navigation.dashboard, end: true },
   { to: '/jobs', label: dashboardText.navigation.jobs, end: true },
+  { to: '/profile/resumes', label: dashboardText.navigation.resumes, end: false },
   { to: '/automation', label: dashboardText.navigation.automation, end: true },
   { to: '/automation/runs', label: dashboardText.navigation.automationRuns, end: true },
   { to: '/integrations', label: dashboardText.navigation.integrations, end: false },
