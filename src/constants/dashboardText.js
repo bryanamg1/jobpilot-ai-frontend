@@ -476,6 +476,21 @@ export const dashboardText = {
     closeBusy: 'Cerrando...',
     empty: 'Todavia no hay sesiones supervisadas abiertas.',
     attentionTitle: 'Requiere atencion humana',
+    loginRequiredTitle: 'LinkedIn requiere iniciar sesion.',
+    loginRequiredDescription:
+      'Inicia sesion manualmente en la ventana supervisada, completa MFA o CAPTCHA si aparece y luego verifica el estado.',
+    verifyLoginIdle: 'Ya inicie sesion - verificar',
+    verifyLoginBusy: 'Verificando sesion...',
+    reusedStoredSession: 'Sesion autenticada reutilizada',
+    reusedStoredSessionDescription:
+      'Se cargo una sesion guardada previamente para este contexto supervisado.',
+    runtimeLabel: 'Runtime',
+    runtimeLocal: 'Ventana local visible',
+    runtimeBrowserless: 'Browserless remoto',
+    remoteRuntimeNotice:
+      'Esta sesion corre en Browserless. El login manual requiere abrir el visor remoto del navegador.',
+    remoteRuntimePending:
+      'El backend ya puede usar Browserless, pero el acceso al visor remoto desde la app requiere una URL de depuracion protegida.',
     lastCaptured: 'Ultima vacante capturada',
     surfaceLabel: 'Superficie detectada',
     surfaces: {

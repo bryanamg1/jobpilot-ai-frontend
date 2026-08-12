@@ -68,6 +68,7 @@ export function BrowserSessionsPanel({
               const isNavigating = pendingAction.kind === 'navigate' && pendingAction.sessionId === session.id;
               const isCapturing = pendingAction.kind === 'capture' && pendingAction.sessionId === session.id;
               const isClosing = pendingAction.kind === 'close' && pendingAction.sessionId === session.id;
+              const requiresLogin = Boolean(session.metadata.attentionReasons?.includes('LOGIN_REQUIRED'));
               const localUrl = urlBySessionId[session.id] ?? session.metadata.currentUrl ?? '';
 
               return (
@@ -80,15 +81,29 @@ export function BrowserSessionsPanel({
                   <p className={styles.meta}>{session.metadata.pageTitle || session.metadata.currentUrl}</p>
                   <p className={styles.meta}>{session.metadata.currentUrl}</p>
                   <p className={styles.meta}>
+                    {text.runtimeLabel}: {resolveRuntimeLabel(session.metadata, text)}
+                  </p>
+                  <p className={styles.meta}>
                     {text.surfaceLabel}: {resolveSurfaceLabel(session.metadata, text)}
                   </p>
 
+                  {session.metadata.reusedStoredSession ? (
+                    <div className={styles.infoBox}>
+                      <strong>{text.reusedStoredSession}</strong>
+                      <p className={styles.meta}>{text.reusedStoredSessionDescription}</p>
+                    </div>
+                  ) : null}
+
                   {session.metadata.requiresAttention ? (
                     <div className={styles.attention}>
-                      <strong>{text.attentionTitle}</strong>
+                      <strong>{requiresLogin ? text.loginRequiredTitle : text.attentionTitle}</strong>
+                      {requiresLogin ? <p className={styles.meta}>{text.loginRequiredDescription}</p> : null}
+                      {session.metadata.runtimeKind === 'browserless' ? (
+                        <p className={styles.meta}>{text.remoteRuntimeNotice}</p>
+                      ) : null}
                       <ul>
                         {(session.metadata.attentionReasons || []).map((item) => (
-                          <li key={item}>{item}</li>
+                          <li key={item}>{formatAttentionReason(item)}</li>
                         ))}
                       </ul>
                     </div>
@@ -135,6 +150,16 @@ export function BrowserSessionsPanel({
                   </label>
 
                   <div className={styles.actions}>
+                    {requiresLogin ? (
+                      <button
+                        type="button"
+                        className={styles.secondaryButton}
+                        onClick={() => onRefreshSession(session.id)}
+                        disabled={isRefreshing || !session.metadata.runtimeAvailable}
+                      >
+                        {isRefreshing ? text.verifyLoginBusy : text.verifyLoginIdle}
+                      </button>
+                    ) : null}
                     <button
                       type="button"
                       onClick={() => onNavigateSession(session.id, localUrl)}
@@ -207,4 +232,28 @@ function resolveSurfaceLabel(metadata = {}, text) {
   }
 
   return text.surfaces.unknown;
+}
+
+function resolveRuntimeLabel(metadata = {}, text) {
+  if (metadata.runtimeKind === 'browserless') {
+    return text.runtimeBrowserless;
+  }
+
+  return text.runtimeLocal;
+}
+
+function formatAttentionReason(value) {
+  if (value === 'LOGIN_REQUIRED') {
+    return 'LinkedIn solicita autenticacion manual.';
+  }
+
+  if (value === 'CAPTCHA_OR_CHALLENGE') {
+    return 'LinkedIn requiere CAPTCHA, MFA o verificacion adicional.';
+  }
+
+  if (value === 'UNSUPPORTED_DOMAIN') {
+    return 'La sesion no esta abierta sobre un dominio permitido de LinkedIn.';
+  }
+
+  return value;
 }
