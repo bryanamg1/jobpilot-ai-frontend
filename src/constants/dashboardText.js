@@ -479,6 +479,7 @@ export const dashboardText = {
     loginRequiredTitle: 'LinkedIn requiere iniciar sesion.',
     loginRequiredDescription:
       'Inicia sesion manualmente en la ventana supervisada, completa MFA o CAPTCHA si aparece y luego verifica el estado.',
+    openRemoteIdle: 'Abrir navegador remoto',
     verifyLoginIdle: 'Ya inicie sesion - verificar',
     verifyLoginBusy: 'Verificando sesion...',
     reusedStoredSession: 'Sesion autenticada reutilizada',
@@ -488,7 +489,7 @@ export const dashboardText = {
     runtimeLocal: 'Ventana local visible',
     runtimeBrowserless: 'Browserless remoto',
     remoteRuntimeNotice:
-      'Esta sesion corre en Browserless. El login manual requiere abrir el visor remoto del navegador.',
+      'Esta sesion corre en Browserless. Usa el navegador remoto para iniciar sesion manualmente y luego verifica el estado.',
     remoteRuntimePending:
       'El backend ya puede usar Browserless, pero el acceso al visor remoto desde la app requiere una URL de depuracion protegida.',
     lastCaptured: 'Ultima vacante capturada',

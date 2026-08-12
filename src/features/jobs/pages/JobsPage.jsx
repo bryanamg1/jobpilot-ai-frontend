@@ -181,6 +181,10 @@ export function JobsPage() {
     });
   }
 
+  function handleOpenRemoteBrowser(sessionId) {
+    window.open(`${API_BASE_URL}/browser-sessions/${sessionId}/remote-control`, '_blank', 'noopener,noreferrer');
+  }
+
   return (
     <AppShell
       eyebrow={dashboardText.shell.eyebrow}
@@ -214,6 +218,7 @@ export function JobsPage() {
             isLoading={browserSessionsQuery.isLoading}
             error={browserSessionsQuery.error}
             onStartSession={handleStartBrowserSession}
+            onOpenRemoteBrowser={handleOpenRemoteBrowser}
             onRefreshSession={handleRefreshBrowserSession}
             onNavigateSession={handleNavigateBrowserSession}
             onCaptureJob={handleCaptureBrowserJob}

@@ -8,6 +8,7 @@ export function BrowserSessionsPanel({
   isLoading,
   error,
   onStartSession,
+  onOpenRemoteBrowser,
   onRefreshSession,
   onNavigateSession,
   onCaptureJob,
@@ -150,6 +151,16 @@ export function BrowserSessionsPanel({
                   </label>
 
                   <div className={styles.actions}>
+                    {session.metadata.runtimeKind === 'browserless' ? (
+                      <button
+                        type="button"
+                        className={styles.secondaryButton}
+                        onClick={() => onOpenRemoteBrowser(session.id)}
+                        disabled={!session.metadata.runtimeAvailable}
+                      >
+                        {text.openRemoteIdle}
+                      </button>
+                    ) : null}
                     {requiresLogin ? (
                       <button
                         type="button"
