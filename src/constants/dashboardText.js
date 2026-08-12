@@ -58,6 +58,7 @@ export const dashboardText = {
     jobs: 'Vacantes',
     automation: 'Automatizacion',
     automationRuns: 'Ejecuciones',
+    integrations: 'Integraciones',
   },
   dashboardOverview: {
     title: 'Resumen ejecutivo del agente',
@@ -416,11 +417,19 @@ export const dashboardText = {
   },
   gmail: {
     title: 'Integracion Gmail',
+    workspaceEyebrow: 'Google Workspace',
+    statusLoading: 'Cargando estado de Gmail...',
+    notConfigured: 'No configurada',
+    notConfiguredDescription: 'La integracion Gmail todavia no esta configurada en el backend.',
+    notConfiguredHelp:
+      'Completa las variables OAuth de Google en el backend para habilitar la conexion desde esta pantalla.',
     disconnected: 'Gmail no conectado',
     connected: 'Gmail conectado',
     connect: 'Conectar Gmail',
     connecting: 'Abriendo autorizacion...',
     disconnect: 'Desconectar',
+    emailLabel: 'Email',
+    labelLabel: 'Etiqueta',
     alertsTitle: 'Alertas recientes',
     alertsEmpty: 'No hay alertas para la consulta actual.',
     alertsLoading: 'Cargando alertas...',

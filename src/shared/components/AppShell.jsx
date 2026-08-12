@@ -8,6 +8,7 @@ const NAVIGATION_ITEMS = [
   { to: '/jobs', label: dashboardText.navigation.jobs, end: true },
   { to: '/automation', label: dashboardText.navigation.automation, end: true },
   { to: '/automation/runs', label: dashboardText.navigation.automationRuns, end: true },
+  { to: '/integrations', label: dashboardText.navigation.integrations, end: false },
 ];
 
 export function AppShell({ eyebrow, title, subtitle, children }) {

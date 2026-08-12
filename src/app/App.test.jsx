@@ -284,6 +284,7 @@ describe('App', () => {
     expect(screen.getByRole('link', { name: /^vacantes$/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /^automatizacion$/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /^ejecuciones$/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^integraciones$/i })).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getAllByText('1').length).toBeGreaterThan(0);
@@ -341,6 +342,40 @@ describe('App', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/postulaciones y ejecuciones/i)).toBeInTheDocument();
+    });
+  });
+
+  it('renders the dedicated integrations route', async () => {
+    const queryClient = new QueryClient();
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/integrations']}>
+          <App />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    expect(screen.getByText(/integracion gmail/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /conectar gmail/i })).toBeInTheDocument();
+    });
+  });
+
+  it('redirects the gmail oauth callback query to integrations', async () => {
+    const queryClient = new QueryClient();
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/?gmail=connected']}>
+          <App />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/integracion gmail/i)).toBeInTheDocument();
     });
   });
 
