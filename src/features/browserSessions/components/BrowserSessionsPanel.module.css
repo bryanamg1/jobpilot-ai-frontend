@@ -6,6 +6,7 @@
   box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
   display: grid;
   gap: 18px;
+  min-width: 0;
 }
 
 .header h2,
@@ -21,6 +22,7 @@
 .attention li {
   margin: 6px 0 0;
   color: #5c6473;
+  overflow-wrap: anywhere;
 }
 
 .startRow,
@@ -29,6 +31,11 @@
 .attention {
   display: grid;
   gap: 12px;
+  min-width: 0;
+}
+
+.startRow {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .field input,
@@ -66,6 +73,7 @@
   padding: 16px;
   display: grid;
   gap: 12px;
+  min-width: 0;
 }
 
 .sessionHeader {
@@ -73,6 +81,11 @@
   justify-content: space-between;
   gap: 12px;
   align-items: center;
+}
+
+.sessionHeader strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .badge {
@@ -131,4 +144,12 @@
 .error {
   margin: 0;
   color: #8c2438;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 900px) {
+  .startRow {
+    grid-template-columns: minmax(0, 180px) minmax(0, 1fr) auto;
+    align-items: end;
+  }
 }

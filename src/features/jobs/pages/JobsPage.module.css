@@ -26,15 +26,16 @@
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(340px, 0.95fr) minmax(0, 1.05fr);
+  grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
   gap: 22px;
+  align-items: start;
 }
 
 .left,
 .right {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 18px;
-  align-content: start;
   min-width: 0;
 }
 

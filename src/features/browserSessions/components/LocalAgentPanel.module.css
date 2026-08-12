@@ -6,6 +6,7 @@
   box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
   display: grid;
   gap: 18px;
+  min-width: 0;
 }
 
 .header h2 {
@@ -20,6 +21,7 @@
 .grid {
   display: grid;
   gap: 10px;
+  min-width: 0;
 }
 
 .row {
@@ -29,8 +31,15 @@
   color: #5c6473;
 }
 
+.row span,
 .row strong {
   color: #172033;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.row span {
+  color: #5c6473;
 }
 
 .actions {

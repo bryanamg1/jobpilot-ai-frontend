@@ -6,6 +6,7 @@
   box-shadow: 0 12px 24px rgba(31, 36, 48, 0.06);
   display: grid;
   gap: 16px;
+  min-width: 0;
 }
 
 .error {
@@ -17,6 +18,10 @@
   justify-content: space-between;
   gap: 16px;
   align-items: start;
+}
+
+.header > div {
+  min-width: 0;
 }
 
 .header h2 {
@@ -64,6 +69,7 @@
   background: rgba(255, 255, 255, 0.74);
   border-radius: 18px;
   padding: 14px;
+  min-width: 0;
 }
 
 .infoBlock span,
@@ -82,6 +88,7 @@
   white-space: pre-wrap;
   font-family: inherit;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .actions {
@@ -107,6 +114,7 @@
 .helper {
   margin: 0;
   color: #5c6473;
+  overflow-wrap: anywhere;
 }
 
 .suggestionList {
@@ -120,6 +128,7 @@
   background: rgba(255, 255, 255, 0.8);
   display: grid;
   gap: 8px;
+  min-width: 0;
 }
 
 .suggestionHeader {
@@ -127,6 +136,11 @@
   justify-content: space-between;
   gap: 12px;
   align-items: start;
+}
+
+.suggestionHeader strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .list,
@@ -140,6 +154,7 @@
 .empty {
   margin: 0;
   color: #707888;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 760px) {

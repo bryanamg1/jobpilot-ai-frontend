@@ -49,4 +49,65 @@ describe('BrowserSessionsPanel', () => {
 
     expect(props.onRefreshSession).toHaveBeenCalledWith('session-1');
   });
+
+  it('muestra solo la sesion activa mas reciente y oculta sesiones cerradas o viejas', () => {
+    const props = createProps({
+      sessions: [
+        {
+          id: 'session-older',
+          provider: 'LINKEDIN_JOBS',
+          status: 'ACTIVE',
+          updatedAt: '2026-08-12T10:00:00.000Z',
+          metadata: {
+            currentUrl: 'https://www.linkedin.com/jobs/view/1',
+            pageTitle: 'LinkedIn Jobs antigua',
+            runtimeAvailable: false,
+            runtimeKind: 'desktop_agent',
+            requiresAttention: false,
+            attentionReasons: [],
+            hiringSignals: [],
+            visibleEmails: [],
+          },
+        },
+        {
+          id: 'session-active',
+          provider: 'LINKEDIN_JOBS',
+          status: 'ATTENTION_REQUIRED',
+          updatedAt: '2026-08-12T12:00:00.000Z',
+          metadata: {
+            currentUrl: 'https://www.linkedin.com/jobs/view/2',
+            pageTitle: 'LinkedIn Jobs actual',
+            runtimeAvailable: true,
+            runtimeKind: 'desktop_agent',
+            requiresAttention: true,
+            attentionReasons: ['LOGIN_REQUIRED'],
+            hiringSignals: [],
+            visibleEmails: [],
+          },
+        },
+        {
+          id: 'session-closed',
+          provider: 'LINKEDIN_JOBS',
+          status: 'CLOSED',
+          updatedAt: '2026-08-12T13:00:00.000Z',
+          metadata: {
+            currentUrl: 'https://www.linkedin.com/jobs/view/3',
+            pageTitle: 'LinkedIn Jobs cerrada',
+            runtimeAvailable: false,
+            runtimeKind: 'desktop_agent',
+            requiresAttention: false,
+            attentionReasons: [],
+            hiringSignals: [],
+            visibleEmails: [],
+          },
+        },
+      ],
+    });
+
+    render(<BrowserSessionsPanel {...props} />);
+
+    expect(screen.getByText('LinkedIn Jobs actual')).toBeInTheDocument();
+    expect(screen.queryByText('LinkedIn Jobs antigua')).not.toBeInTheDocument();
+    expect(screen.queryByText('LinkedIn Jobs cerrada')).not.toBeInTheDocument();
+  });
 });

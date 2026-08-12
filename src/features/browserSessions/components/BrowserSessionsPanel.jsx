@@ -19,7 +19,7 @@ export function BrowserSessionsPanel({
   const [provider, setProvider] = useState('LINKEDIN_JOBS');
   const [urlBySessionId, setUrlBySessionId] = useState({});
 
-  const activeSessions = useMemo(() => sessions || [], [sessions]);
+  const visibleSessions = useMemo(() => selectVisibleSessions(sessions || []), [sessions]);
 
   return (
     <section className={styles.card}>
@@ -61,9 +61,9 @@ export function BrowserSessionsPanel({
       {error ? <ErrorNotice error={error} /> : null}
 
       {!isLoading && !error ? (
-        activeSessions.length ? (
+        visibleSessions.length ? (
           <div className={styles.list}>
-            {activeSessions.map((session) => {
+            {visibleSessions.map((session) => {
               const isRefreshing = pendingAction.kind === 'refresh' && pendingAction.sessionId === session.id;
               const isNavigating = pendingAction.kind === 'navigate' && pendingAction.sessionId === session.id;
               const isCapturing = pendingAction.kind === 'capture' && pendingAction.sessionId === session.id;
@@ -229,6 +229,32 @@ function resolveSurfaceLabel(metadata = {}, text) {
   }
 
   return text.surfaces.unknown;
+}
+
+function selectVisibleSessions(sessions) {
+  const ordered = [...sessions]
+    .filter((session) => session?.status !== 'CLOSED')
+    .sort(compareSessionsDesc);
+
+  if (!ordered.length) {
+    return [];
+  }
+
+  return [ordered[0]];
+}
+
+function compareSessionsDesc(left, right) {
+  const leftRuntime = left?.metadata?.runtimeAvailable ? 1 : 0;
+  const rightRuntime = right?.metadata?.runtimeAvailable ? 1 : 0;
+
+  if (leftRuntime !== rightRuntime) {
+    return rightRuntime - leftRuntime;
+  }
+
+  const leftDate = Date.parse(left?.updatedAt ?? left?.startedAt ?? 0);
+  const rightDate = Date.parse(right?.updatedAt ?? right?.startedAt ?? 0);
+
+  return rightDate - leftDate;
 }
 
 function resolveRuntimeLabel(metadata = {}, text) {
