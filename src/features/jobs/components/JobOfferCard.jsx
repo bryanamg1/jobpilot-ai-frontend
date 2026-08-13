@@ -28,7 +28,7 @@ export function JobOfferCard({
     <article className={styles.card}>
       <div className={styles.top}>
         <div>
-          <p className={styles.company}>{job.jobOffer.company}</p>
+          {job.jobOffer.company ? <p className={styles.company}>{job.jobOffer.company}</p> : null}
           <h3>{job.jobOffer.title}</h3>
         </div>
         <div className={styles.scoreBlock}>

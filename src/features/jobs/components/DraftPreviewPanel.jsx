@@ -52,7 +52,7 @@ export function DraftPreviewPanel({
     <section className={styles.panel}>
       <div className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>{preview.company}</p>
+          {preview.company ? <p className={styles.eyebrow}>{preview.company}</p> : null}
           <h2>{draftText.title}</h2>
         </div>
         <span className={`${styles.badge} ${styles[getMeta(previewStatusMeta, preview.status, 'BLOCKED').tone]}`}>
@@ -222,7 +222,7 @@ export function DraftPreviewPanel({
           <ul className={styles.factList}>
             {preview.factsUsed.map((fact) => (
               <li key={`${fact.field}-${fact.value}-${fact.source}`}>
-                <strong>{getLabel(factFieldMeta, fact.field, fact.field)}</strong>: {fact.value} ({getLabel(certaintyMeta, fact.certainty, fact.certainty)})
+                <strong>{getLabel(factFieldMeta, fact.field, fact.field)}</strong>: {fact.value}
               </li>
             ))}
           </ul>
