@@ -26,6 +26,7 @@
 }
 
 .startRow,
+.startFields,
 .list,
 .field,
 .attention {
@@ -38,9 +39,15 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+.startFields {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+
 .field input,
 .field select {
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   border: 1px solid #d9d3c6;
   border-radius: 16px;
   padding: 12px 14px;
@@ -58,6 +65,13 @@
   background: #172033;
   color: #f7f2e7;
   cursor: pointer;
+}
+
+.startButton {
+  width: 100%;
+  min-width: 0;
+  white-space: normal;
+  text-align: center;
 }
 
 .startRow button:disabled,
@@ -149,7 +163,7 @@
 
 @media (min-width: 900px) {
   .startRow {
-    grid-template-columns: minmax(0, 180px) minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr);
     align-items: end;
   }
 }

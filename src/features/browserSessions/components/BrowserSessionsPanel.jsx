@@ -29,26 +29,29 @@ export function BrowserSessionsPanel({
       </div>
 
       <div className={styles.startRow}>
-        <label className={styles.field}>
-          <span>{text.providerLabel}</span>
-          <select value={provider} onChange={(event) => setProvider(event.target.value)}>
-            {Object.entries(text.providers).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.field}>
-          <span>{text.navigateLabel}</span>
-          <input
-            value={startUrl}
-            placeholder={text.navigatePlaceholder}
-            onChange={(event) => setStartUrl(event.target.value)}
-          />
-        </label>
+        <div className={styles.startFields}>
+          <label className={styles.field}>
+            <span>{text.providerLabel}</span>
+            <select value={provider} onChange={(event) => setProvider(event.target.value)}>
+              {Object.entries(text.providers).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={styles.field}>
+            <span>{text.navigateLabel}</span>
+            <input
+              value={startUrl}
+              placeholder={text.navigatePlaceholder}
+              onChange={(event) => setStartUrl(event.target.value)}
+            />
+          </label>
+        </div>
         <button
           type="button"
+          className={styles.startButton}
           onClick={() => onStartSession(provider, startUrl.trim() || undefined)}
           disabled={pendingAction.kind === 'start'}
         >
