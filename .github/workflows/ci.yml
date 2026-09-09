@@ -35,3 +35,48 @@ jobs:
 
       - name: Run checks
         run: npm run check
+
+  frontend-docker-check:
+    name: frontend-docker-check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Build Docker image
+        run: docker build --build-arg VITE_API_BASE_URL=/api/v1 -t jobpilot-frontend:${{ github.sha }} .
+
+      - name: Run Docker container
+        run: docker run -d --name jobpilot-frontend-ci -p 8080:80 jobpilot-frontend:${{ github.sha }}
+
+      - name: Smoke test frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for attempt in {1..10}; do
+            if curl --fail --silent http://127.0.0.1:8080/ > /dev/null; then
+              break
+            fi
+
+            if [ "$attempt" -eq 10 ]; then
+              docker logs jobpilot-frontend-ci
+              exit 1
+            fi
+
+            sleep 1
+          done
+
+          curl --fail --silent --show-error http://127.0.0.1:8080/ > /dev/null
+          curl --fail --silent --show-error http://127.0.0.1:8080/jobs > /dev/null
+
+      - name: Show Docker logs on failure
+        if: failure()
+        run: docker logs jobpilot-frontend-ci || true
+
+      - name: Cleanup Docker resources
+        if: always()
+        run: |
+          docker rm -f jobpilot-frontend-ci || true
+          docker rmi jobpilot-frontend:${{ github.sha }} || true
